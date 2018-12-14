@@ -88,7 +88,6 @@
     </ApplicationDefinition>
     <Compile Include="Tools\GlobalVar.cs" />
     <Compile Include="Tools\IniFileHelper.cs" />
-    <Compile Include="Tools\Language.cs" />
     <Compile Include="Tools\LaunchCore.cs" />
     <Compile Include="Tools\Tools.cs" />
     <Page Include="MainWindow.xaml">
