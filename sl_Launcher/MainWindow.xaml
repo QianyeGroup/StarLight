@@ -5,7 +5,7 @@
     
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button Name="Settings" Content="设置"/>
+            <Button Name="Settings" Content="设置" Click="Settings_Click"/>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
@@ -15,10 +15,10 @@
             <Label Name="Name" Content="名字:" Margin="6,45,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
             <TextBox Name="Name_TextBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="121"/>
             <Label Name="Password" Content="密码:" Margin="6,75,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
-            <PasswordBox Name="Password_TextBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,75,0,0" VerticalAlignment="Top" Width="121"/>
+            <PasswordBox Name="PasswordBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,75,0,0" VerticalAlignment="Top" Width="121"/>
             <Label Name="LoginMode" Content="模式:" Margin="6,15,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
             <!-- 必须在最后加载 -->
-            <ComboBox Name="ComboBox_LoginMode" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,15,0,0" VerticalAlignment="Top" Width="121" SelectedIndex="1" SelectionChanged="ComboBox_LoginMode_SelectionChanged">
+            <ComboBox Name="ComboBox_LoginMode" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,15,0,0" VerticalAlignment="Top" Width="121" SelectionChanged="ComboBox_LoginMode_SelectionChanged">
                 <Label Content="正版登陆"/>
                 <Label Content="离线模式"/>
             </ComboBox>

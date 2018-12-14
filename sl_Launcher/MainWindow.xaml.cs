@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region 系统引用
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+#endregion
 
+#region 第三方引用
 using MahApps.Metro.Controls;
 using System.Diagnostics;
 using System.IO;
@@ -20,6 +23,7 @@ using System.Threading;
 using MahApps.Metro.Controls.Dialogs;
 using KMCCC.Launcher;
 using StarLight.Launcher.Tools;
+#endregion
 
 namespace StarLight.Launcher
 {
@@ -28,27 +32,45 @@ namespace StarLight.Launcher
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        #region 初始化窗口
         public MainWindow()
         {
             InitializeComponent();
+
+            this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
+            Reporter.SetClientName("星际之光客户端 V" + GlobalVar.ThisVer);
+            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
+            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
+            GetBackgroundImage();
             // 检测配置文件
             if (File.Exists(@"Data\Config.ini") == false)
             {
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
+                this.ShowMessageAsync("欢迎！", "检测到您是第一次打开启动器，请完成以下设置。");
+                IniFileHelper.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
+                IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
+                IniFileHelper.SetValue("Config", "BGM", "0", @"Data\Config.ini");
+                Settings a = new Settings();
+                a.Owner = this;
+                a.ShowDialog();
             }
             // 读取配置文件
             GlobalVar.UserName = IniFileHelper.GetValue("Config", "UserName", @"Data\Config.ini");
-            GlobalVar.LoginMode = IniFileHelper.GetValue("Config", "LoginMode", @"Data\Config.ini");
-            // 语言赋值
-            this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
-            Reporter.SetClientName("星际之光客户端 V" + GlobalVar.ThisVer);
-            GetBackgroundImage();
-            Thread GBM = new Thread(GetBackgroundMusic);
-            GBM.Start();
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
+            GlobalVar.LoginMode = int.Parse(IniFileHelper.GetValue("Config", "LoginMode", @"Data\Config.ini"));
+            GlobalVar.MaxMemory = int.Parse(IniFileHelper.GetValue("Config", "MaxMemory", @"Data\Config.ini"));
+            GlobalVar.BGM = int.Parse(IniFileHelper.GetValue("Config", "BGM", @"Data\Config.ini"));
+            // 应用控件配置
+            this.ComboBox_LoginMode.SelectedIndex = GlobalVar.LoginMode;
+            if (GlobalVar.BGM == 0)
+            {
+                Thread GBM = new Thread(GetBackgroundMusic);
+                GBM.Start();
+            }
         }
+        #endregion
+
+        #region 获取背景音乐
         private void GetBackgroundMusic()
         {
             GC.Collect();
@@ -81,7 +103,9 @@ namespace StarLight.Launcher
             BackgroundMusicPlayer.Dispatcher.Invoke(new Action(() => { BackgroundMusicPlayer.Play(); }));
             GC.Collect();
         }
+        #endregion
 
+        #region 获取背景图片
         private void GetBackgroundImage()
         {
             GC.Collect();
@@ -114,17 +138,31 @@ namespace StarLight.Launcher
             this.Background = b;
             GC.Collect();
         }
+        #endregion
 
+        #region 开始游戏
         private void Play_Click(object sender, RoutedEventArgs e)
         {
-            GlobalVar.Account = "1307993674@qq.com";
-            GlobalVar.Password = "zx20010514..";
-            GlobalVar.MaxMemory = 512;
-            Thread Play = new Thread(PlayGame);
-            Play.Start();
+            switch (ComboBox_LoginMode.SelectedIndex)
+            {
+                case 0:
+                    GlobalVar.Account = Name_TextBox.Text;
+                    GlobalVar.Password = PasswordBox.Password;
+                    Thread Play_M = new Thread(PlayGame_Mojang);
+                    Play_M.Start();
+                    break;
+                case 1:
+                    GlobalVar.UserName = Name_TextBox.Text;
+                    Thread Play_O = new Thread(PlayGame_Offline);
+                    Play_O.Start();
+                    break;
+            }
+            this.Play.IsEnabled = false;
         }
+        #endregion
 
-        private void PlayGame(object obj)
+        #region 启动游戏 正版
+        private void PlayGame_Mojang(object obj)
         {
             LaunchResult result = Launch.Mojang(GlobalVar.Account, GlobalVar.Password, GlobalVar.MaxMemory);
 
@@ -135,26 +173,30 @@ namespace StarLight.Launcher
                 {
                     case ErrorType.NoJAVA:
                         this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "你系统的Java有异常，可能你非正常途径删除过Java，请尝试重新安装Java。\n" + result.ErrorMessage); }));
-                        
+                        BackgroundMusicPlayer.Dispatcher.Invoke(new Action(() => { BackgroundMusicPlayer.Play(); }));
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
                         //MessageBox.Show("你系统的Java有异常，可能你非正常途径删除过Java，请尝试重新安装Java\n详细信息：" + result.ErrorMessage, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     case ErrorType.AuthenticationFailed:
                         this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "正版验证失败！请检查你的账号密码。"); }));
-                        
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
                         //MessageBox.Show(this, "正版验证失败！请检查你的账号密码", "账号错误\n详细信息：" + result.ErrorMessage, MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     case ErrorType.UncompressingFailed:
                         this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "可能的多开或文件损坏，请确认文件完整且不要多开。\n如果你不是多开游戏的话，请检查libraries文件夹是否完整。\n" + result.ErrorMessage); }));
-                        
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
                         //MessageBox.Show(this, "可能的多开或文件损坏，请确认文件完整且不要多开\n如果你不是多开游戏的话，请检查libraries文件夹是否完整\n详细信息：" + result.ErrorMessage, "可能的多开或文件损坏", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                     default:
-                        this.Dispatcher.Invoke(new Action(() => {
+                        this.Dispatcher.Invoke(new Action(() =>
+                        {
                             this.ShowMessageAsync(
                             "启动失败，请将此窗口截图向开发者寻求帮助。",
                             result.ErrorMessage + "\n" +
-                            (result.Exception == null ? string.Empty : result.Exception.StackTrace) + result.ErrorMessage); }));
-                        
+                            (result.Exception == null ? string.Empty : result.Exception.StackTrace) + result.ErrorMessage);
+                        }));
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
+
                         //MessageBox.Show(this,
                         //    result.ErrorMessage + "\n" +
                         //    (result.Exception == null ? string.Empty : result.Exception.StackTrace),
@@ -163,25 +205,66 @@ namespace StarLight.Launcher
                 }
             }
         }
+        #endregion
 
+        #region 启动游戏 离线
+        private void PlayGame_Offline(object obj)
+        {
+            LaunchResult result = Launch.Offline(GlobalVar.UserName, GlobalVar.MaxMemory);
 
+            if (!result.Success)
+            {
+                //MessageBox.Show(result.ErrorMessage, result.ErrorType.ToString());
+                switch (result.ErrorType)
+                {
+                    case ErrorType.NoJAVA:
+                        this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "你系统的Java有异常，可能你非正常途径删除过Java，请尝试重新安装Java。\n" + result.ErrorMessage); }));
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
+                        //MessageBox.Show("你系统的Java有异常，可能你非正常途径删除过Java，请尝试重新安装Java\n详细信息：" + result.ErrorMessage, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    case ErrorType.AuthenticationFailed:
+                        this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "用户名不可为空，请检查。"); }));
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
+                        //MessageBox.Show(this, "正版验证失败！请检查你的账号密码", "账号错误\n详细信息：" + result.ErrorMessage, MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    case ErrorType.UncompressingFailed:
+                        this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "可能的多开或文件损坏，请确认文件完整且不要多开。\n如果你不是多开游戏的话，请检查libraries文件夹是否完整。\n" + result.ErrorMessage); }));
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
+                        //MessageBox.Show(this, "可能的多开或文件损坏，请确认文件完整且不要多开\n如果你不是多开游戏的话，请检查libraries文件夹是否完整\n详细信息：" + result.ErrorMessage, "可能的多开或文件损坏", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    default:
+                        this.Dispatcher.Invoke(new Action(() =>
+                        {
+                            this.ShowMessageAsync(
+                            "启动失败，请将此窗口截图向开发者寻求帮助。",
+                            result.ErrorMessage + "\n" +
+                            (result.Exception == null ? string.Empty : result.Exception.StackTrace) + result.ErrorMessage);
+                        }));
+                        Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
+                        //MessageBox.Show(this,
+                        //    result.ErrorMessage + "\n" +
+                        //    (result.Exception == null ? string.Empty : result.Exception.StackTrace),
+                        //    "启动错误，请将此窗口截图向开发者寻求帮助");
+                        break;
+                }
+            }
+        }
+        #endregion
 
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
 
         }
 
+        #region 背景音乐循环
         private void BackgroundMusicPlayer_MediaEnded(object sender, RoutedEventArgs e)
         {
             Thread GBM = new Thread(GetBackgroundMusic);
             GBM.Start();
         }
+        #endregion
 
-        private void LoginMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
+        #region 模式下拉框检测
         private void ComboBox_LoginMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (ComboBox_LoginMode.SelectedIndex)
@@ -189,14 +272,26 @@ namespace StarLight.Launcher
                 case 0:
                     this.Name.Content = "账号:";
                     this.Password.Visibility = Visibility.Visible;
-                    this.Password_TextBox.Visibility = Visibility.Visible;
+                    this.PasswordBox.Visibility = Visibility.Visible;
+                    IniFileHelper.SetValue("Config", "LoginMode", "0", @"Data\Config.ini");
                     break;
                 case 1:
                     this.Name.Content = "名字:";
                     this.Password.Visibility = Visibility.Collapsed;
-                    this.Password_TextBox.Visibility = Visibility.Collapsed;
+                    this.PasswordBox.Visibility = Visibility.Collapsed;
+                    IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
                     break;
             }
         }
+        #endregion
+
+        #region 设置按钮
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            Settings a = new Settings();
+            a.Owner = this;
+            a.ShowDialog();
+        }
+        #endregion
     }
 }
