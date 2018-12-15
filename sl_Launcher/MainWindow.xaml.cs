@@ -47,19 +47,27 @@ namespace StarLight.Launcher
             {
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
-                this.ShowMessageAsync("欢迎！", "检测到您是第一次打开启动器，请完成以下设置。");
+                if (this.ShowMessageAsync("首次配置", "是否开启背景音乐?", MessageDialogStyle.AffirmativeAndNegative) == Task.Factory.StartNew(() => MessageDialogResult.Affirmative))
+                {
+                    IniFileHelper.SetValue("Config", "BGM", "1", @"Data\Config.ini");
+                }
+                else
+                {
+                    IniFileHelper.SetValue("Config", "BGM", "0", @"Data\Config.ini");
+                }
+                this.ShowMessageAsync("首次配置", "最大内存默认为1024MB，如需修改请点击右上角设置按钮。");
                 IniFileHelper.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
                 IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "BGM", "0", @"Data\Config.ini");
-                Settings a = new Settings();
-                a.Owner = this;
-                a.ShowDialog();
+                IniFileHelper.SetValue("Config", "UserName", "请输入一个名字", @"Data\Config.ini");
             }
             // 读取配置文件
             GlobalVar.UserName = IniFileHelper.GetValue("Config", "UserName", @"Data\Config.ini");
+            GlobalVar.Account = IniFileHelper.GetValue("Config", "Account", @"Data\Config.ini");
+            GlobalVar.Password = IniFileHelper.GetValue("Config", "Password", @"Data\Config.ini");
             GlobalVar.LoginMode = int.Parse(IniFileHelper.GetValue("Config", "LoginMode", @"Data\Config.ini"));
             GlobalVar.MaxMemory = int.Parse(IniFileHelper.GetValue("Config", "MaxMemory", @"Data\Config.ini"));
             GlobalVar.BGM = int.Parse(IniFileHelper.GetValue("Config", "BGM", @"Data\Config.ini"));
+
             // 应用控件配置
             this.ComboBox_LoginMode.SelectedIndex = GlobalVar.LoginMode;
             if (GlobalVar.BGM == 0)
@@ -69,6 +77,19 @@ namespace StarLight.Launcher
             }
         }
         #endregion
+
+        private async void DialogsBeforeExit()
+        {
+            MessageDialogResult result = await this.ShowMessageAsync(this.Title, "您真的要离开吗?", MessageDialogStyle.AffirmativeAndNegative);
+            if (result == MessageDialogResult.Negative)
+            {
+                return;
+            }
+            else//确认退出
+            {
+                //系统退出需要修改的
+            }
+        }
 
         #region 获取背景音乐
         private void GetBackgroundMusic()
@@ -273,12 +294,15 @@ namespace StarLight.Launcher
                     this.Name.Content = "账号:";
                     this.Password.Visibility = Visibility.Visible;
                     this.PasswordBox.Visibility = Visibility.Visible;
+                    Name_TextBox.Text = GlobalVar.Account;
+                    PasswordBox.Password = GlobalVar.Password;
                     IniFileHelper.SetValue("Config", "LoginMode", "0", @"Data\Config.ini");
                     break;
                 case 1:
                     this.Name.Content = "名字:";
                     this.Password.Visibility = Visibility.Collapsed;
                     this.PasswordBox.Visibility = Visibility.Collapsed;
+                    Name_TextBox.Text = GlobalVar.UserName;
                     IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
                     break;
             }
