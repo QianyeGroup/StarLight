@@ -16,6 +16,6 @@ namespace StarLight.Launcher
     /// </summary>
     public partial class App : Application
     {
-        public static LauncherCore Core = LauncherCore.Create(gameRootPath: "Game");
+        
     }
 }

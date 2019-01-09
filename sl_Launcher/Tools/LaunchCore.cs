@@ -13,8 +13,8 @@ namespace StarLight.Launcher.Tools
         /// <returns></returns>
         public static LaunchResult Offline(string UserName, int MaxMemory)
         {
-            var ver = App.Core.GetVersion("StarLight-Client");
-            var result = App.Core.Launch(new LaunchOptions
+            var ver = MainWindow.Core.GetVersion("StarLight-Client");
+            var result = MainWindow.Core.Launch(new LaunchOptions
             {
                 Version = ver, //Ver为Versions里你要启动的版本名字
                 MaxMemory = MaxMemory, //最大内存，int类型
@@ -32,8 +32,8 @@ namespace StarLight.Launcher.Tools
         /// <returns></returns>
         public static LaunchResult Mojang(string Account, string Password, int MaxMemory)
         {
-            var ver = App.Core.GetVersion("StarLight-Client");
-            var result = App.Core.Launch(new LaunchOptions
+            var ver = MainWindow.Core.GetVersion("StarLight-Client");
+            var result = MainWindow.Core.Launch(new LaunchOptions
             {
                 Version = ver, //Ver为Versions里你要启动的版本名字
                 MaxMemory = MaxMemory, //最大内存，int类型

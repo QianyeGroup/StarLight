@@ -1,17 +1,24 @@
 ﻿<Controls:MetroWindow x:Class="StarLight.Launcher.Settings"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" Height="136" Width="300" Title="设置" ResizeMode = "CanMinimize" WindowStartupLocation="CenterScreen" Icon="./Assets/Icon.ico" Closed="MetroWindow_Closed">
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" Height="194" Width="300" Title="设置" ResizeMode = "CanMinimize" WindowStartupLocation="CenterScreen" Icon="./Assets/Icon.ico" Closed="MetroWindow_Closed">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="13*"/>
+            <ColumnDefinition Width="8*"/>
+        </Grid.ColumnDefinitions>
         <Label Content="最大内存:" HorizontalAlignment="Left" Margin="16,33,0,0" VerticalAlignment="Top"/>
         <TextBox Name="MaxMemory" HorizontalAlignment="Left" Height="23" Margin="77,33,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="54"/>
         <Label Content="MB" HorizontalAlignment="Left" Margin="127,33,0,0" VerticalAlignment="Top"/>
-        <Label Content="背景音乐:" HorizontalAlignment="Left" Margin="168,33,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.15,-0.038"/>
-        <ComboBox Name="BGM" HorizontalAlignment="Left" Margin="234,33,0,0" VerticalAlignment="Top" Width="42">
+        <Label Content="背景音乐:" HorizontalAlignment="Left" Margin="168,33,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.15,-0.038" Grid.ColumnSpan="2"/>
+        <ComboBox Name="BGM" HorizontalAlignment="Left" Margin="52,33,0,0" VerticalAlignment="Top" Width="42" Grid.Column="1">
             <Label Content="开"/>
             <Label Content="关"/>
         </ComboBox>
-        <Label Content="设置页就先这样，后续会美化界面的。" HorizontalAlignment="Left" Margin="42,0,0,0" VerticalAlignment="Top" Width="217"/>
-        <Button Name="Done" Content="完成" HorizontalAlignment="Left" Margin="109,70,0,0" VerticalAlignment="Top" Width="75" FontSize="12" Click="Done_Click"/>
+        <Label Content="设置页就先这样，后续会美化界面的。" HorizontalAlignment="Left" Margin="42,0,0,0" VerticalAlignment="Top" Width="217" Grid.ColumnSpan="2"/>
+        <Button Name="Done" Content="完成" HorizontalAlignment="Left" Margin="107,126,0,0" VerticalAlignment="Top" Width="75" FontSize="12" Click="Done_Click" RenderTransformOrigin="0.467,1.833"/>
+        <Label Content="Java路径:" HorizontalAlignment="Left" Margin="16,87,0,0" VerticalAlignment="Top"/>
+        <TextBox Name="JavaPath" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="6" Margin="82,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="162"/>
+        <Button Content="选择" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="62,87,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="-0.812,2.615" Click="Button_Click"/>
     </Grid>
 </Controls:MetroWindow>

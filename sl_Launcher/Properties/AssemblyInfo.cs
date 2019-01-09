@@ -10,10 +10,10 @@ using System.Windows;
 [assembly: AssemblyTitle("星际之光 启动器")]
 [assembly: AssemblyDescription("星际之光 启动器")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("锦州千叶科技有限公司")]
+[assembly: AssemblyCompany("千叶集团")]
 [assembly: AssemblyProduct("星际之光")]
 [assembly: AssemblyCopyright("Copyright © 千叶集团 2016-2018")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Qianye™")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
@@ -51,5 +51,6 @@ using System.Windows;
 // 可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值，
 // 方法是按如下所示使用“*”: 
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1.1805.1222")]
-[assembly: AssemblyFileVersion("2.1.1805.1222")]
+[assembly: AssemblyVersion("2.1.1812.15")]
+[assembly: AssemblyFileVersion("2.1.1812.15")]
+[assembly: NeutralResourcesLanguageAttribute("zh-Hans")]

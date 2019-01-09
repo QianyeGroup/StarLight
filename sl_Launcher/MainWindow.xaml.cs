@@ -32,11 +32,11 @@ namespace StarLight.Launcher
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+       public static LauncherCore Core;
         #region 初始化窗口
         public MainWindow()
         {
             InitializeComponent();
-
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
             Reporter.SetClientName("星际之光客户端 V" + GlobalVar.ThisVer);
             MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
@@ -47,18 +47,14 @@ namespace StarLight.Launcher
             {
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
-                if (this.ShowMessageAsync("首次配置", "是否开启背景音乐?", MessageDialogStyle.AffirmativeAndNegative) == Task.Factory.StartNew(() => MessageDialogResult.Affirmative))
-                {
-                    IniFileHelper.SetValue("Config", "BGM", "1", @"Data\Config.ini");
-                }
-                else
-                {
-                    IniFileHelper.SetValue("Config", "BGM", "0", @"Data\Config.ini");
-                }
-                this.ShowMessageAsync("首次配置", "最大内存默认为1024MB，如需修改请点击右上角设置按钮。");
+                this.ShowMessageAsync("检测到您首次启动游戏", "最大内存默认为1024MB。\n背景音乐默认关闭。\n如需修改请点击右上角设置按钮。");
                 IniFileHelper.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
                 IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "UserName", "请输入一个名字", @"Data\Config.ini");
+                IniFileHelper.SetValue("Config", "BGM", "1", @"Data\Config.ini");
+                IniFileHelper.SetValue("Config", "UserName", " ", @"Data\Config.ini");
+                IniFileHelper.SetValue("Config", "Account", " ", @"Data\Config.ini");
+                IniFileHelper.SetValue("Config", "Password", " ", @"Data\Config.ini");
+                IniFileHelper.SetValue("Config", "JavaPath", KMCCC.Tools.SystemTools.FindJava().Last(), @"Data\Config.ini");
             }
             // 读取配置文件
             GlobalVar.UserName = IniFileHelper.GetValue("Config", "UserName", @"Data\Config.ini");
@@ -67,7 +63,7 @@ namespace StarLight.Launcher
             GlobalVar.LoginMode = int.Parse(IniFileHelper.GetValue("Config", "LoginMode", @"Data\Config.ini"));
             GlobalVar.MaxMemory = int.Parse(IniFileHelper.GetValue("Config", "MaxMemory", @"Data\Config.ini"));
             GlobalVar.BGM = int.Parse(IniFileHelper.GetValue("Config", "BGM", @"Data\Config.ini"));
-
+            GlobalVar.JavaPath = IniFileHelper.GetValue("Config", "JavaPath", @"Data\Config.ini");
             // 应用控件配置
             this.ComboBox_LoginMode.SelectedIndex = GlobalVar.LoginMode;
             if (GlobalVar.BGM == 0)
@@ -75,21 +71,9 @@ namespace StarLight.Launcher
                 Thread GBM = new Thread(GetBackgroundMusic);
                 GBM.Start();
             }
+
         }
         #endregion
-
-        private async void DialogsBeforeExit()
-        {
-            MessageDialogResult result = await this.ShowMessageAsync(this.Title, "您真的要离开吗?", MessageDialogStyle.AffirmativeAndNegative);
-            if (result == MessageDialogResult.Negative)
-            {
-                return;
-            }
-            else//确认退出
-            {
-                //系统退出需要修改的
-            }
-        }
 
         #region 获取背景音乐
         private void GetBackgroundMusic()
@@ -164,18 +148,22 @@ namespace StarLight.Launcher
         #region 开始游戏
         private void Play_Click(object sender, RoutedEventArgs e)
         {
+            Core = LauncherCore.Create(new LauncherCoreCreationOption(javaPath: GlobalVar.JavaPath, gameRootPath: "Game"));
             switch (ComboBox_LoginMode.SelectedIndex)
             {
                 case 0:
                     GlobalVar.Account = Name_TextBox.Text;
                     GlobalVar.Password = PasswordBox.Password;
-                    Thread Play_M = new Thread(PlayGame_Mojang);
-                    Play_M.Start();
+                    IniFileHelper.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
+                    IniFileHelper.SetValue("Config", "Password", GlobalVar.Account, @"Data\Config.ini");
+                    Thread Play_Mojang = new Thread(PlayGame_Mojang);
+                    Play_Mojang.Start();
                     break;
                 case 1:
                     GlobalVar.UserName = Name_TextBox.Text;
-                    Thread Play_O = new Thread(PlayGame_Offline);
-                    Play_O.Start();
+                    IniFileHelper.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
+                    Thread Play_Offline = new Thread(PlayGame_Offline);
+                    Play_Offline.Start();
                     break;
             }
             this.Play.IsEnabled = false;
@@ -224,6 +212,7 @@ namespace StarLight.Launcher
                         //    "启动错误，请将此窗口截图向开发者寻求帮助");
                         break;
                 }
+                this.Hide();
             }
         }
         #endregion
@@ -268,6 +257,7 @@ namespace StarLight.Launcher
                         //    "启动错误，请将此窗口截图向开发者寻求帮助");
                         break;
                 }
+                this.Hide();
             }
         }
         #endregion
