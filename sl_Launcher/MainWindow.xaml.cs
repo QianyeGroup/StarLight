@@ -13,13 +13,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
 #endregion
 
 #region 第三方引用
 using MahApps.Metro.Controls;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
 using MahApps.Metro.Controls.Dialogs;
 using KMCCC.Launcher;
 using StarLight.Launcher.Tools;
@@ -32,7 +32,7 @@ namespace StarLight.Launcher
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-       public static LauncherCore Core;
+        public static LauncherCore Core;
         #region 初始化窗口
         public MainWindow()
         {
@@ -155,7 +155,7 @@ namespace StarLight.Launcher
                     GlobalVar.Account = Name_TextBox.Text;
                     GlobalVar.Password = PasswordBox.Password;
                     IniFileHelper.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
-                    IniFileHelper.SetValue("Config", "Password", GlobalVar.Account, @"Data\Config.ini");
+                    IniFileHelper.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
                     Thread Play_Mojang = new Thread(PlayGame_Mojang);
                     Play_Mojang.Start();
                     break;
@@ -307,5 +307,26 @@ namespace StarLight.Launcher
             a.ShowDialog();
         }
         #endregion
+
+        private void Name_TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            switch (ComboBox_LoginMode.SelectedIndex)
+            {
+                case 0:
+                    GlobalVar.Account = Name_TextBox.Text;
+                    IniFileHelper.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
+                    break;
+                case 1:
+                    GlobalVar.UserName = Name_TextBox.Text;
+                    IniFileHelper.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
+                    break;
+            }
+        }
+
+        private void PasswordBox_TextInput(object sender, TextCompositionEventArgs e)
+        {
+            GlobalVar.Password = PasswordBox.Password;
+            IniFileHelper.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
+        }
     }
 }

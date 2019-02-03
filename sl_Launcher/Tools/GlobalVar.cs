@@ -16,6 +16,6 @@
         public static int LoginMode; // 登录模式
         public static int BGM; // 背景音乐
         // 其他
-        public static string ResRootUrl = "https://iqianye-1252037376.cos.ap-beijing.myqcloud.com/file/AppData/StarLight/"; // 资源服务器根地址
+        public static string ResRootUrl = "https://iqianye-1252037376.file.myqcloud.com/file/AppData/StarLight/"; // 资源服务器根地址
     }
 }
