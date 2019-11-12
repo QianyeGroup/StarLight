@@ -37,6 +37,7 @@ namespace StarLight.Launcher
         public MainWindow()
         {
             InitializeComponent();
+            MiniTools.ReadWebFile()
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
             Reporter.SetClientName("星际之光客户端 V" + GlobalVar.ThisVer);
             MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
