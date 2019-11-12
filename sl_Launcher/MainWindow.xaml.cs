@@ -40,14 +40,15 @@ namespace StarLight.Launcher
             // 检查更新
             String webFilePath = GlobalVar.ResRootUrl + "version.ini";
             String saveDirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\";
-            string saveFilePath = "version.ini";
-            MiniTools.ReadWebFile(webFilePath, saveDirPath, saveFilePath);
+            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "version.ini", saveDirPath, "version.ini");
+            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "update_log.txt", saveDirPath, "update_log.txt");
             String thisVer = "2.1";
             String thisVerCode = "1911110";
-            String latestVer = IniFileHelper.GetValue("Config", "LatestVer", saveDirPath + saveFilePath);
-            String latestVerCode = IniFileHelper.GetValue("Config", "LatestVerCode", saveDirPath + saveFilePath);
-            String updateLog = IniFileHelper.GetValue("Config", "UpdateLog", saveDirPath + saveFilePath);
-            File.Delete(saveDirPath + saveFilePath);
+            String latestVer = IniFileHelper.GetValue("Config", "LatestVer", saveDirPath + "version.ini");
+            String latestVerCode = IniFileHelper.GetValue("Config", "LatestVerCode", saveDirPath + "version.ini");
+            String updateLog = File.ReadAllText(saveDirPath + "update_log.txt");
+            File.Delete(saveDirPath + "version.ini");
+            File.Delete(saveDirPath + "update_log.txt");
             if (int.Parse(thisVerCode) < int.Parse(latestVerCode))
             {
                 MessageBox.Show("发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n" + updateLog, "", MessageBoxButton.OK);
