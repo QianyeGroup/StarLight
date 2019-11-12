@@ -21,7 +21,6 @@ namespace StarLight.Launcher.Tools
             client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
             Directory.CreateDirectory(dirPath);
             client.DownloadFile(url, dirPath + filePath);
-
         }
         ///<summary>
         ///生成随机字符串 

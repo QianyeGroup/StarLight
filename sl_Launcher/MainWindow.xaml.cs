@@ -37,11 +37,26 @@ namespace StarLight.Launcher
         public MainWindow()
         {
             InitializeComponent();
-            MiniTools.ReadWebFile()
+            // 检查更新
+            String webFilePath = GlobalVar.ResRootUrl + "version.ini";
+            String saveDirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\";
+            string saveFilePath = "version.ini";
+            MiniTools.ReadWebFile(webFilePath,saveDirPath ,saveFilePath);
+            String thisVer = "2.1";
+            String thisVerCode = "1911110";
+            String latestVer = IniFileHelper.GetValue("Config", "LatestVer", saveDirPath + saveFilePath);
+            String latestVerCode = IniFileHelper.GetValue("Config", "LatestVerCode", saveDirPath + saveFilePath);
+            String updateLog = IniFileHelper.GetValue("Config", "UpdateLog", saveDirPath + saveFilePath);
+            File.Delete(saveDirPath+saveFilePath);
+            if (int.Parse(thisVerCode) < int.Parse(latestVerCode))
+            {
+                MessageBox.Show("发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n"+updateLog ,"",MessageBoxButton.OK);
+            }
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
             Reporter.SetClientName("星际之光客户端 V" + GlobalVar.ThisVer);
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
+            //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
+            //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
+            //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
             GetBackgroundImage();
             // 检测配置文件
             if (File.Exists(@"Data\Config.ini") == false)
