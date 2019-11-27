@@ -91,7 +91,7 @@ namespace StarLight.Launcher
             File.Delete(saveDirPath + "update_log.txt");
             if (int.Parse(thisVerCode) < int.Parse(latestVerCode))
             {
-                await this.ShowMessageAsync("更新", "发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n").GetAwaiter(MessageDialogResult.Affirmative.getaw);
+                await this.ShowMessageAsync("更新", "发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n");
                 {
                     System.Diagnostics.Process.Start("http://sl.iqianye.cn/");
                     Environment.Exit(0);
