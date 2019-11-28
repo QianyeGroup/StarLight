@@ -38,7 +38,7 @@ namespace StarLight.Launcher.Tools
                 Version = ver, //Ver为Versions里你要启动的版本名字
                 MaxMemory = MaxMemory, //最大内存，int类型
                 //Authenticator = new OfflineAuthenticator(UserName), //离线启动
-                Authenticator = new YggdrasilLogin(Account, Password, true), // 正版启动，最后一个为是否twitch登录
+                Authenticator = new YggdrasilLogin(Account, Password, false), // 正版启动，最后一个为是否twitch登录
             });
             return result;
         }

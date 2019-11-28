@@ -168,6 +168,7 @@ namespace StarLight.Launcher
         #region 开始游戏
         private void Play_Click(object sender, RoutedEventArgs e)
         {
+            Core = LauncherCore.Create(new LauncherCoreCreationOption(javaPath: GlobalVar.JavaPath, gameRootPath: "Game"));
             switch (ComboBox_LoginMode.SelectedIndex)
             {
                 case 0: 
@@ -252,7 +253,7 @@ namespace StarLight.Launcher
                         //    "启动错误，请将此窗口截图向开发者寻求帮助");
                         break;
                 }
-                this.Hide();
+                Environment.Exit(0);
             }
 
         }
@@ -298,7 +299,7 @@ namespace StarLight.Launcher
                         //    "启动错误，请将此窗口截图向开发者寻求帮助");
                         break;
                 }
-                this.Hide();
+                Environment.Exit(0);
             }
 
         }
