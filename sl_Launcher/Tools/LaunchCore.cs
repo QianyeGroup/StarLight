@@ -1,4 +1,4 @@
-﻿using KMCCC.Launcher;
+﻿﻿using KMCCC.Launcher;
 using KMCCC.Authentication;
 
 namespace StarLight.Launcher.Tools

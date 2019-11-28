@@ -21,8 +21,9 @@ using System.Threading;
 #region 第三方引用
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using KMCCC.Launcher;
 using StarLight.Launcher.Tools;
+using KMCCC.Launcher;
+using KMCCC.Authentication;
 #endregion
 
 namespace StarLight.Launcher
@@ -38,7 +39,6 @@ namespace StarLight.Launcher
         {
             InitializeComponent();
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
-            Reporter.SetClientName("星际之光客户端 V" + GlobalVar.ThisVer);
             //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
             //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
             //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
@@ -48,7 +48,6 @@ namespace StarLight.Launcher
             {
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
-                this.ShowMessageAsync("检测到您首次启动游戏", "最大内存默认为1024MB。\n背景音乐默认关闭。\n如需修改请点击右上角设置按钮。");
                 IniFileHelper.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
                 IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
                 IniFileHelper.SetValue("Config", "BGM", "1", @"Data\Config.ini");
@@ -82,18 +81,16 @@ namespace StarLight.Launcher
             String saveDirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\";
             MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "version.ini", saveDirPath, "version.ini");
             MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "update_log.txt", saveDirPath, "update_log.txt");
-            String thisVer = "2.1";
-            String thisVerCode = "1911110";
             String latestVer = IniFileHelper.GetValue("Config", "LatestVer", saveDirPath + "version.ini");
             String latestVerCode = IniFileHelper.GetValue("Config", "LatestVerCode", saveDirPath + "version.ini");
             String updateLog = File.ReadAllText(saveDirPath + "update_log.txt");
             File.Delete(saveDirPath + "version.ini");
             File.Delete(saveDirPath + "update_log.txt");
-            if (int.Parse(thisVerCode) < int.Parse(latestVerCode))
+            if (int.Parse(GlobalVar.ThisVerCode) < int.Parse(latestVerCode))
             {
-                await this.ShowMessageAsync("更新", "发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n");
+                await this.ShowMessageAsync("更新", "发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n" + updateLog, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "更新" });
                 {
-                    System.Diagnostics.Process.Start("http://sl.iqianye.cn/");
+                    System.Diagnostics.Process.Start("http://url.iqianye.cn/slupdate");
                     Environment.Exit(0);
                 }
             }
@@ -171,25 +168,45 @@ namespace StarLight.Launcher
         #region 开始游戏
         private void Play_Click(object sender, RoutedEventArgs e)
         {
-            Core = LauncherCore.Create(new LauncherCoreCreationOption(javaPath: GlobalVar.JavaPath, gameRootPath: "Game"));
             switch (ComboBox_LoginMode.SelectedIndex)
             {
-                case 0:
-                    GlobalVar.Account = Name_TextBox.Text;
-                    GlobalVar.Password = PasswordBox.Password;
-                    IniFileHelper.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
-                    IniFileHelper.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
-                    Thread Play_Mojang = new Thread(PlayGame_Mojang);
-                    Play_Mojang.Start();
+                case 0: 
+                    if ("".Equals(Name_TextBox.Text) | "".Equals(PasswordBox.Password))
+                    {
+                        this.ShowMessageAsync("错误", "请输入账号或密码。");
+                    }
+                    else
+                    {
+                        GlobalVar.Account = Name_TextBox.Text;
+                        GlobalVar.Password = PasswordBox.Password;
+                        IniFileHelper.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
+                        IniFileHelper.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
+                        this.Play.IsEnabled = false;
+                        this.ComboBox_LoginMode.IsEnabled = false;
+                        this.Name_TextBox.IsEnabled = false;
+                        this.PasswordBox.IsEnabled = false;
+                        Thread Play_Mojang = new Thread(PlayGame_Mojang);
+                        Play_Mojang.Start();
+                    }
                     break;
                 case 1:
-                    GlobalVar.UserName = Name_TextBox.Text;
-                    IniFileHelper.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
-                    Thread Play_Offline = new Thread(PlayGame_Offline);
-                    Play_Offline.Start();
+                    if ("".Equals(Name_TextBox.Text))
+                    {
+                        this.ShowMessageAsync("错误", "请输入名字。");
+                    }
+                    else
+                    {
+                        GlobalVar.UserName = Name_TextBox.Text;
+                        IniFileHelper.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
+                        this.Play.IsEnabled = false;
+                        this.ComboBox_LoginMode.IsEnabled = false;
+                        this.Name_TextBox.IsEnabled = false;
+                        this.PasswordBox.IsEnabled = false;
+                        Thread Play_Offline = new Thread(PlayGame_Offline);
+                        Play_Offline.Start();
+                    }
                     break;
             }
-            this.Play.IsEnabled = false;
         }
         #endregion
 
@@ -237,6 +254,7 @@ namespace StarLight.Launcher
                 }
                 this.Hide();
             }
+
         }
         #endregion
 
@@ -282,6 +300,7 @@ namespace StarLight.Launcher
                 }
                 this.Hide();
             }
+
         }
         #endregion
 

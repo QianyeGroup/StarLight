@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace StarLight.Launcher.Tools
@@ -40,9 +39,6 @@ namespace StarLight.Launcher.Tools
         /// <returns></returns>
         [DllImport("kernel32")]
         private static extern long WritePrivateProfileString(string sectionName, string key, string value, string filePath);
-
-
-
 
         #endregion
 

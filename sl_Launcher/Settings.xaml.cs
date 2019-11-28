@@ -46,7 +46,7 @@ namespace StarLight.Launcher
             IniFileHelper.SetValue("Config", "JavaPath", GlobalVar.JavaPath, @"Data\Config.ini");
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Select_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
             dialog.Multiselect = true;//该值确定是否可以选择多个文件
@@ -58,6 +58,16 @@ namespace StarLight.Launcher
                 JavaPath.Text = GlobalVar.JavaPath;
                 
             }
+
+        }
+
+        private void AutoMem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void AutoJava_Click(object sender, RoutedEventArgs e)
+        {
 
         }
     }

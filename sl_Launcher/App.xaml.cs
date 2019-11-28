@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KMCCC.Launcher;
 using System.Windows;
-
-using KMCCC.Launcher;
-using StarLight.Launcher.Tools;
 
 namespace StarLight.Launcher
 {
@@ -16,6 +8,6 @@ namespace StarLight.Launcher
     /// </summary>
     public partial class App : Application
     {
-        
+       
     }
 }

@@ -22,8 +22,8 @@
                 <Label Content="正版登陆"/>
                 <Label Content="离线模式"/>
             </ComboBox>
-            <Label x:Name="Password_Copy" Content="©2015-2019 千叶集团" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="Password_Copy1" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,34"/>
+            <Label x:Name="Copy_TextBox" Content="©2015-2019 千叶集团" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+            <Label x:Name="Group_TextBox" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,34"/>
         </Grid>
         <MediaElement LoadedBehavior="Manual" Name="BackgroundMusicPlayer" Width="0" Height="0" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="-100,-100,-100,-100" MediaEnded="BackgroundMusicPlayer_MediaEnded"/>
     </Grid>
