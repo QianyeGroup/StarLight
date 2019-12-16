@@ -4,8 +4,8 @@
     {
 
         // 版本
-        public static string ThisVer = "2.1"; // 当前版本
-        public static string ThisVerCode = "1912110"; // 当前版本构建号
+        public static string ThisVer = "3.0"; // 当前版本
+        public static string ThisVerCode = "1912160"; // 当前版本构建号
 
         // 配置相关
         public static string UserName; // 用户名
