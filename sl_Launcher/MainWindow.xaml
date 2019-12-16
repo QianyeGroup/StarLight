@@ -18,7 +18,7 @@
             <PasswordBox Name="PasswordBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,75,0,0" VerticalAlignment="Top" Width="121" TextInput="PasswordBox_TextInput"/>
             <Label Name="LoginMode" Content="模式:" Margin="6,15,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
             <!-- 必须在最后加载 -->
-            <ComboBox Name="ComboBox_LoginMode" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,15,0,0" VerticalAlignment="Top" Width="121" SelectionChanged="ComboBox_LoginMode_SelectionChanged">
+            <ComboBox Name="ComboBox_LoginMode" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,15,0,0" VerticalAlignment="Top" Width="121" SelectionChanged="ComboBox_LoginMode_SelectionChanged" IsEnabled="False">
                 <Label Content="正版登陆"/>
                 <Label Content="离线模式"/>
             </ComboBox>

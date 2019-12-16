@@ -13,7 +13,7 @@ namespace StarLight.Launcher.Tools
         /// <returns></returns>
         public static LaunchResult Offline(string UserName, int MaxMemory)
         {
-            var ver = MainWindow.Core.GetVersion("StarLight-Client");
+            var ver = MainWindow.Core.GetVersion("1.12.2-forge1.12.2-14.23.5.2847");
             var result = MainWindow.Core.Launch(new LaunchOptions
             {
                 Version = ver, //Ver为Versions里你要启动的版本名字

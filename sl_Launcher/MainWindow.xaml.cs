@@ -39,15 +39,16 @@ namespace StarLight.Launcher
         {
             InitializeComponent();
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
-            //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Music.txt", @"Data\Url\", "Music.txt");
-            //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
-            //MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "Data/Url/Image.txt", @"Data\Url\", "Image.txt");
+            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Music.txt", @"Data\Url\", "Music.txt");
+            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
+            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
             GetBackgroundImage();
             // 检测配置文件
             if (File.Exists(@"Data\Config.ini") == false)
             {
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
+                this.ShowMessageAsync("检测到您首次启动游戏", "最大内存默认为1024MB。(条件允许的情况下推荐设置为4096MB)\n背景音乐默认关闭。\n如需修改请点击右上角设置按钮。");
                 IniFileHelper.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
                 IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
                 IniFileHelper.SetValue("Config", "BGM", "1", @"Data\Config.ini");
