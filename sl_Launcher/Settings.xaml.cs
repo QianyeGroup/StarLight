@@ -63,12 +63,12 @@ namespace StarLight.Launcher
 
         private void AutoMem_Click(object sender, RoutedEventArgs e)
         {
-
+            MaxMemory.Text = (KMCCC.Tools.SystemTools.GetRunmemory() / 2).ToString();
         }
 
         private void AutoJava_Click(object sender, RoutedEventArgs e)
         {
-
+            JavaPath.Text = KMCCC.Tools.SystemTools.FindJava().Last();
         }
     }
 }

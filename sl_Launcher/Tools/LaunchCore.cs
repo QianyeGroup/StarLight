@@ -13,14 +13,14 @@ namespace StarLight.Launcher.Tools
         /// <returns></returns>
         public static LaunchResult Offline(string UserName, int MaxMemory)
         {
-            var ver = MainWindow.Core.GetVersion("1.12.2-forge1.12.2-14.23.5.2847");
+            var ver = MainWindow.Core.GetVersion("StarLight-Client");
             var result = MainWindow.Core.Launch(new LaunchOptions
             {
                 Version = ver, //Ver为Versions里你要启动的版本名字
                 MaxMemory = MaxMemory, //最大内存，int类型
                 Authenticator = new OfflineAuthenticator(UserName), //离线启动
                 //Authenticator = new YggdrasilLogin("邮箱", "密码", true), // 正版启动，最后一个为是否twitch登录
-            });
+            }); ; ; ;
             return result;
         }
         /// <summary>

@@ -13,7 +13,7 @@
         <Grid Background="#80FFFFFF" HorizontalAlignment="Left" Width="200">
             <!-- 名字/账号相关控件 -->
             <Label Name="Name" Content="名字:" Margin="6,45,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
-            <TextBox Name="Name_TextBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="121" TextChanged="Name_TextBox_TextChanged"/>
+            <TextBox Name="Name_TextBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,45,0,0" VerticalAlignment="Top" Width="121" TextChanged="Name_TextBox_TextChanged"/>
             <Label Name="Password" Content="密码:" Margin="6,75,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
             <PasswordBox Name="PasswordBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,75,0,0" VerticalAlignment="Top" Width="121" TextInput="PasswordBox_TextInput"/>
             <Label Name="LoginMode" Content="模式:" Margin="6,15,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
@@ -22,8 +22,8 @@
                 <Label Content="正版登陆"/>
                 <Label Content="离线模式"/>
             </ComboBox>
-            <Label x:Name="Copy_TextBox" Content="©2015-2019 千叶集团" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-            <Label x:Name="Group_TextBox" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,34"/>
+            <Label x:Name="Copy_TextBox" Content="©2015-2019 千叶集团" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,10"/>
+            <Label x:Name="Group_TextBox" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,44"/>
         </Grid>
         <MediaElement LoadedBehavior="Manual" Name="BackgroundMusicPlayer" Width="0" Height="0" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="-100,-100,-100,-100" MediaEnded="BackgroundMusicPlayer_MediaEnded"/>
     </Grid>

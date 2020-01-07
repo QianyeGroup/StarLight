@@ -172,7 +172,7 @@ namespace StarLight.Launcher
             Core = LauncherCore.Create(new LauncherCoreCreationOption(javaPath: GlobalVar.JavaPath, gameRootPath: "Game"));
             switch (ComboBox_LoginMode.SelectedIndex)
             {
-                case 0: 
+                case 0:
                     if ("".Equals(Name_TextBox.Text) | "".Equals(PasswordBox.Password))
                     {
                         this.ShowMessageAsync("错误", "请输入账号或密码。");
@@ -254,7 +254,7 @@ namespace StarLight.Launcher
                         //    "启动错误，请将此窗口截图向开发者寻求帮助");
                         break;
                 }
-                Environment.Exit(0);
+
             }
 
         }
@@ -300,7 +300,7 @@ namespace StarLight.Launcher
                         //    "启动错误，请将此窗口截图向开发者寻求帮助");
                         break;
                 }
-                Environment.Exit(0);
+
             }
 
         }
