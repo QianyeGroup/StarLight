@@ -59,10 +59,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
-    <Reference Include="KMCCC.Pro, Version=0.9.5.7, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\KMCCC.Pro.dll</HintPath>
-    </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net45\MahApps.Metro.dll</HintPath>
@@ -94,10 +90,11 @@
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tools\GlobalVar.cs" />
-    <Compile Include="Tools\IniFileHelper.cs" />
-    <Compile Include="Tools\LaunchCore.cs" />
-    <Compile Include="Tools\Tools.cs" />
+    <Compile Include="Others\GlobalVar.cs" />
+    <Compile Include="Utils\ZipUtils.cs" />
+    <Compile Include="Utils\IniFileUtils.cs" />
+    <Compile Include="Core\LaunchCore.cs" />
+    <Compile Include="Utils\MiniUtils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -176,6 +173,20 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CL.IO.Zip\CL.IO.Zip\CL.IO.Zip.csproj">
+      <Project>{be8465a3-f65a-4d0f-88fb-56062758922e}</Project>
+      <Name>CL.IO.Zip</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\KMCCC\KMCCC.Pro\KMCCC.Pro.csproj">
+      <Project>{4270e717-21ee-46cf-a55a-b8af33bbcb54}</Project>
+      <Name>KMCCC.Pro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MinecraftOutClient\MinecraftOutClient\MinecraftOutClient.csproj">
+      <Project>{e11bf40c-cba6-47b5-80d2-9b3a5796f730}</Project>
+      <Name>MinecraftOutClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

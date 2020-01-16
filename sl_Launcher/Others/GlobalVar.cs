@@ -1,11 +1,11 @@
-﻿namespace StarLight.Launcher.Tools
+﻿namespace StarLight.Launcher.Utils
 {
     public static class GlobalVar
     {
 
         // 版本
-        public static string ThisVer = "3.0"; // 当前版本
-        public static string ThisVerCode = "1912160"; // 当前版本构建号
+        public static string ThisVer = "3.4"; // 当前版本
+        public static string ThisVerCode = "1812160"; // 当前版本构建号
 
         // 配置相关
         public static string UserName; // 用户名
@@ -16,6 +16,6 @@
         public static int LoginMode; // 登录模式
         public static int BGM; // 背景音乐
         // 其他
-        public static string ResRootUrl = "https://qianyegroup.gitee.io/starlight/"; // 资源服务器根地址
+        public static string ResRootUrl = "https://starlight.oss-cn-shanghai.aliyuncs.com/"; // 资源服务器根地址
     }
 }

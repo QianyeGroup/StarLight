@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 
-using StarLight.Launcher.Tools;
+using StarLight.Launcher.Utils;
 using Microsoft.Win32;
 using System.Windows.Forms;
 
@@ -41,9 +41,9 @@ namespace StarLight.Launcher
             GlobalVar.MaxMemory = int.Parse(MaxMemory.Text);
             GlobalVar.BGM = BGM.SelectedIndex;
             GlobalVar.JavaPath = JavaPath.Text;
-            IniFileHelper.SetValue("Config", "MaxMemory", GlobalVar.MaxMemory.ToString(), @"Data\Config.ini");
-            IniFileHelper.SetValue("Config", "BGM", GlobalVar.BGM.ToString(), @"Data\Config.ini");
-            IniFileHelper.SetValue("Config", "JavaPath", GlobalVar.JavaPath, @"Data\Config.ini");
+            IniFileUtils.SetValue("Config", "MaxMemory", GlobalVar.MaxMemory.ToString(), @"Data\Config.ini");
+            IniFileUtils.SetValue("Config", "BGM", GlobalVar.BGM.ToString(), @"Data\Config.ini");
+            IniFileUtils.SetValue("Config", "JavaPath", GlobalVar.JavaPath, @"Data\Config.ini");
         }
 
         private void Select_Click(object sender, RoutedEventArgs e)

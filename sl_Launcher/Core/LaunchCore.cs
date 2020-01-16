@@ -1,7 +1,7 @@
 ﻿﻿using KMCCC.Launcher;
 using KMCCC.Authentication;
 
-namespace StarLight.Launcher.Tools
+namespace StarLight.Launcher.Utils
 {
     public class Launch
     {

@@ -1,19 +1,11 @@
 ﻿#region 系统引用
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 #endregion
@@ -21,9 +13,12 @@ using System.Threading;
 #region 第三方引用
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using StarLight.Launcher.Tools;
+using StarLight.Launcher.Utils;
 using KMCCC.Launcher;
-using KMCCC.Authentication;
+using MinecraftOutClient.Modules;
+using ServerInfo = MinecraftOutClient.Modules.ServerInfo;
+using System.Net;
+using CL.IO.Zip;
 #endregion
 
 namespace StarLight.Launcher
@@ -39,9 +34,28 @@ namespace StarLight.Launcher
         {
             InitializeComponent();
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Music.txt", @"Data\Url\", "Music.txt");
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
+            try
+            {
+                MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Music.txt", @"Data\Url\", "Music.txt");
+                MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
+                MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
+            }
+            catch (Exception e)
+            {
+                this.ShowMessageAsync("错误", e.Message);
+            }
+            //新实例化一个ServerInfo，并使用带参数的构造函数设置IP以及端口
+            /*
+            try
+            {
+                ServerInfo info = new ServerInfo("mc.nepnepnep.top", 25565);
+                info.StartGetServerInfo();
+            }
+            catch (Exception e)
+            {
+                this.ShowMessageAsync("获取服务器信息异常", e.Message);
+            }
+            */
             GetBackgroundImage();
             // 检测配置文件
             if (File.Exists(@"Data\Config.ini") == false)
@@ -49,22 +63,22 @@ namespace StarLight.Launcher
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
                 this.ShowMessageAsync("检测到您首次启动游戏", "最大内存默认为1024MB。(条件允许的情况下推荐设置为4096MB)\n背景音乐默认关闭。\n如需修改请点击右上角设置按钮。");
-                IniFileHelper.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "BGM", "1", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "UserName", " ", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "Account", " ", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "Password", " ", @"Data\Config.ini");
-                IniFileHelper.SetValue("Config", "JavaPath", KMCCC.Tools.SystemTools.FindJava().Last(), @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "BGM", "1", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "UserName", " ", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "Account", " ", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "Password", " ", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "JavaPath", KMCCC.Tools.SystemTools.FindJava().Last(), @"Data\Config.ini");
             }
             // 读取配置文件
-            GlobalVar.UserName = IniFileHelper.GetValue("Config", "UserName", @"Data\Config.ini");
-            GlobalVar.Account = IniFileHelper.GetValue("Config", "Account", @"Data\Config.ini");
-            GlobalVar.Password = IniFileHelper.GetValue("Config", "Password", @"Data\Config.ini");
-            GlobalVar.LoginMode = int.Parse(IniFileHelper.GetValue("Config", "LoginMode", @"Data\Config.ini"));
-            GlobalVar.MaxMemory = int.Parse(IniFileHelper.GetValue("Config", "MaxMemory", @"Data\Config.ini"));
-            GlobalVar.BGM = int.Parse(IniFileHelper.GetValue("Config", "BGM", @"Data\Config.ini"));
-            GlobalVar.JavaPath = IniFileHelper.GetValue("Config", "JavaPath", @"Data\Config.ini");
+            GlobalVar.UserName = IniFileUtils.GetValue("Config", "UserName", @"Data\Config.ini");
+            GlobalVar.Account = IniFileUtils.GetValue("Config", "Account", @"Data\Config.ini");
+            GlobalVar.Password = IniFileUtils.GetValue("Config", "Password", @"Data\Config.ini");
+            GlobalVar.LoginMode = int.Parse(IniFileUtils.GetValue("Config", "LoginMode", @"Data\Config.ini"));
+            GlobalVar.MaxMemory = int.Parse(IniFileUtils.GetValue("Config", "MaxMemory", @"Data\Config.ini"));
+            GlobalVar.BGM = int.Parse(IniFileUtils.GetValue("Config", "BGM", @"Data\Config.ini"));
+            GlobalVar.JavaPath = IniFileUtils.GetValue("Config", "JavaPath", @"Data\Config.ini");
             // 应用控件配置
             this.ComboBox_LoginMode.SelectedIndex = GlobalVar.LoginMode;
             if (GlobalVar.BGM == 0)
@@ -78,24 +92,133 @@ namespace StarLight.Launcher
         private async void CheckUpdate()
         {
             // 检查更新
-            String webFilePath = GlobalVar.ResRootUrl + "version.ini";
-            String saveDirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\";
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "version.ini", saveDirPath, "version.ini");
-            MiniTools.ReadWebFile(GlobalVar.ResRootUrl + "update_log.txt", saveDirPath, "update_log.txt");
-            String latestVer = IniFileHelper.GetValue("Config", "LatestVer", saveDirPath + "version.ini");
-            String latestVerCode = IniFileHelper.GetValue("Config", "LatestVerCode", saveDirPath + "version.ini");
-            String updateLog = File.ReadAllText(saveDirPath + "update_log.txt");
-            File.Delete(saveDirPath + "version.ini");
-            File.Delete(saveDirPath + "update_log.txt");
-            if (int.Parse(GlobalVar.ThisVerCode) < int.Parse(latestVerCode))
+            string webFilePath = GlobalVar.ResRootUrl + "version.ini"; // 远程数据
+            string saveDirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\"; // 本地数据
+            try
+            {
+                MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "version.ini", saveDirPath, "version.ini");  // 下载远程数据
+                MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "update_log.txt", saveDirPath, "update_log.txt"); // 下载更新日志
+            }
+            catch (Exception e)
+            {
+                await this.ShowMessageAsync("错误", e.Message);
+            }
+            string latestVer = IniFileUtils.GetValue("Config", "LatestVer", saveDirPath + "version.ini"); // 最新版本
+            string latestVerCode = IniFileUtils.GetValue("Config", "LatestVerCode", saveDirPath + "version.ini"); // 最新版本识别号
+            string updateLog = File.ReadAllText(saveDirPath + "update_log.txt"); // 更新日志
+            File.Delete(saveDirPath + "version.ini"); // 删除临时文件
+            File.Delete(saveDirPath + "update_log.txt"); // 同上
+            if (int.Parse(GlobalVar.ThisVerCode) < int.Parse(latestVerCode)) // 判断版本信息
             {
                 await this.ShowMessageAsync("更新", "发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n" + updateLog, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "更新" });
                 {
-                    System.Diagnostics.Process.Start("http://url.iqianye.cn/slupdate");
-                    Environment.Exit(0);
+                    //c = await this.ShowProgressAsync("更新", "");
+                    try
+                    {
+                        var update = await this.ShowProgressAsync("更新", "");
+                        update.SetMessage("正在下载更新包...\n初始化...");
+                        System.Windows.Forms.Application.DoEvents();
+                        /*
+                        float percent = 0;
+
+                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                        HttpWebRequest Myrq;
+                        switch (GlobalVar.ThisVer)
+                        {
+                            case "3.4":
+                                Myrq = (HttpWebRequest)WebRequest.Create(GlobalVar.ResRootUrl + "file/ota/StarLight_OTA_V" + GlobalVar.ThisVer + "-V" + latestVer + ".zip");
+                                break;
+                            default:
+                                Myrq = (HttpWebRequest)WebRequest.Create(GlobalVar.ResRootUrl + "file/ota/StarLight_OTA_V" + GlobalVar.ThisVer + "-V" + latestVer + ".zip");
+                                break;
+                        }
+                        HttpWebResponse myrp = (HttpWebResponse)Myrq.GetResponse();
+                        long totalBytes = myrp.ContentLength;
+                        update.Maximum = (int)totalBytes;
+                        System.IO.Stream st = myrp.GetResponseStream();
+                        System.IO.Stream so = new System.IO.FileStream(@"update.zip.tmp", System.IO.FileMode.Create);
+                        long totalDownloadedByte = 0;
+                        byte[] by = new byte[1024];
+                        int osize = st.Read(by, 0, (int)by.Length);
+
+                        while (osize > 0)
+                        {
+                            totalDownloadedByte = osize + totalDownloadedByte;
+                            System.Windows.Forms.Application.DoEvents();
+                            so.Write(by, 0, osize);
+                            update.SetProgress((int)totalDownloadedByte);
+                            osize = st.Read(by, 0, (int)by.Length);
+
+                            percent = (float)totalDownloadedByte / (float)totalBytes * 100;
+
+                            string totalSizeType;
+                            float totalSizeVar;
+                            string totalDownloadedSizeType;
+                            float totalDownloadedSizeVar;
+                            if (totalDownloadedByte / 1024 <= 1024)
+                            {
+                                totalDownloadedSizeType = "KB";
+                                totalDownloadedSizeVar = (float)totalDownloadedByte / 1024;
+                            }
+                            else
+                            {
+                                totalDownloadedSizeType = "MB";
+                                totalDownloadedSizeVar = (float)totalDownloadedByte / 1024 / 1024;
+                            }
+                            if (totalBytes / 1024 <= 1024)
+                            {
+                                totalSizeType = "KB";
+                                totalSizeVar = (float)totalBytes / 1024;
+                            }
+                            else
+                            {
+                                totalSizeType = "MB";
+                                totalSizeVar = (float)totalBytes / 1024 / 1024;
+                            }
+                            update.SetTitle("更新 - " + percent.ToString("0") + "%");
+                            update.SetMessage("正在下载更新包 - " +
+                                totalDownloadedSizeVar.ToString("f2") +
+                                totalDownloadedSizeType + "/" +
+                                totalSizeVar.ToString("f2") +
+                                totalSizeType +
+                                "\n\n更新日志：\n" + updateLog);
+
+                            System.Windows.Forms.Application.DoEvents(); //必须加注这句代码，否则label1将因为循环执行太快而来不及显示信息
+                        }
+                        so.Close();
+                        st.Close();
+                        */
+                        update.SetTitle("解压");
+                        update.SetMessage("下载完成，准备解压...");
+                        System.Windows.Forms.Application.DoEvents();
+                        ZipHandler handler = ZipHandler.GetInstance();
+                        var fromZip = @"update.zip.tmp"; // 需要解压的压缩文件路径
+                        var toDic = @"."; // 解压到的文件夹路径
+                        handler.UnpackAll(fromZip, toDic, (num) =>
+                        {
+                            update.SetTitle("解压 - " + num.ToString("0") + "%");
+                            update.SetMessage("正在解压更新文件中...");
+                            System.Windows.Forms.Application.DoEvents();
+                        });
+                        update.SetMessage("解压完成");
+                        System.Windows.Forms.Application.DoEvents();
+                        File.Delete(@"update.zip.tmp");
+                        Environment.Exit(0);
+                        await update.CloseAsync();
+
+                    }
+                    catch (Exception e)
+                    {
+                        await this.ShowMessageAsync("错误", e.Message);
+                        Environment.Exit(0);
+                    }
+
+                    //System.Diagnostics.Process.Start("http://url.iqianye.cn/slupdate");
+                    //Environment.Exit(0);
                 }
             }
         }
+
         #region 获取背景音乐
         private void GetBackgroundMusic()
         {
@@ -109,11 +232,11 @@ namespace StarLight.Launcher
             number = r.Next();
             number = number % 36;
             dirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\";
-            filePath = MiniTools.GetRandomString(number) + ".qdl";
+            filePath = MiniUtils.GetRandomString(number) + ".qdl";
             string[] rurl = File.ReadAllLines(@"Data\Url\Music.txt");
             Random ur = new Random();
             string url = rurl[ur.Next(rurl.Length)];
-            MiniTools.ReadWebFile(url, dirPath, filePath);
+            MiniUtils.ReadWebFile(url, dirPath, filePath);
             // MiniTools.ReadWebFile("https://api.iqianye.cn/get/get_random_music.php?musictype=netease&displaytype=play", dirPath, filePath);
             string hashMd5 = HashHelper.ComputeMD5(dirPath + filePath);
             if (File.Exists(dirPath + hashMd5 + ".tmp.mp3"))
@@ -142,11 +265,11 @@ namespace StarLight.Launcher
             number = r.Next();
             number = number % 36;
             dirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\";
-            filePath = MiniTools.GetRandomString(number) + ".qdl";
+            filePath = MiniUtils.GetRandomString(number) + ".qdl";
             string[] rurl = File.ReadAllLines(@"Data\Url\Image.txt");
             Random ur = new Random();
             string url = rurl[ur.Next(rurl.Length)];
-            MiniTools.ReadWebFile(url, dirPath, filePath);
+            MiniUtils.ReadWebFile(url, dirPath, filePath);
             // MiniTools.ReadWebFile("https://api.iqianye.cn/get/get_random_image.php?imagetype=mc&displaytype=view", dirPath, filePath);
             string hashMd5 = HashHelper.ComputeMD5(dirPath + filePath);
             if (File.Exists(dirPath + hashMd5 + ".tmp.jpg"))
@@ -181,8 +304,8 @@ namespace StarLight.Launcher
                     {
                         GlobalVar.Account = Name_TextBox.Text;
                         GlobalVar.Password = PasswordBox.Password;
-                        IniFileHelper.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
-                        IniFileHelper.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
+                        IniFileUtils.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
+                        IniFileUtils.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
                         this.Play.IsEnabled = false;
                         this.ComboBox_LoginMode.IsEnabled = false;
                         this.Name_TextBox.IsEnabled = false;
@@ -199,7 +322,7 @@ namespace StarLight.Launcher
                     else
                     {
                         GlobalVar.UserName = Name_TextBox.Text;
-                        IniFileHelper.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
+                        IniFileUtils.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
                         this.Play.IsEnabled = false;
                         this.ComboBox_LoginMode.IsEnabled = false;
                         this.Name_TextBox.IsEnabled = false;
@@ -330,14 +453,14 @@ namespace StarLight.Launcher
                     this.PasswordBox.Visibility = Visibility.Visible;
                     Name_TextBox.Text = GlobalVar.Account;
                     PasswordBox.Password = GlobalVar.Password;
-                    IniFileHelper.SetValue("Config", "LoginMode", "0", @"Data\Config.ini");
+                    IniFileUtils.SetValue("Config", "LoginMode", "0", @"Data\Config.ini");
                     break;
                 case 1:
                     this.Name.Content = "名字:";
                     this.Password.Visibility = Visibility.Collapsed;
                     this.PasswordBox.Visibility = Visibility.Collapsed;
                     Name_TextBox.Text = GlobalVar.UserName;
-                    IniFileHelper.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
+                    IniFileUtils.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
                     break;
             }
         }
@@ -358,11 +481,11 @@ namespace StarLight.Launcher
             {
                 case 0:
                     GlobalVar.Account = Name_TextBox.Text;
-                    IniFileHelper.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
+                    IniFileUtils.SetValue("Config", "Account", GlobalVar.Account, @"Data\Config.ini");
                     break;
                 case 1:
                     GlobalVar.UserName = Name_TextBox.Text;
-                    IniFileHelper.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
+                    IniFileUtils.SetValue("Config", "UserName", GlobalVar.UserName, @"Data\Config.ini");
                     break;
             }
         }
@@ -370,7 +493,7 @@ namespace StarLight.Launcher
         private void PasswordBox_TextInput(object sender, TextCompositionEventArgs e)
         {
             GlobalVar.Password = PasswordBox.Password;
-            IniFileHelper.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
+            IniFileUtils.SetValue("Config", "Password", GlobalVar.Password, @"Data\Config.ini");
         }
     }
 }
