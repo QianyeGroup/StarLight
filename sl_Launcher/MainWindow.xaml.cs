@@ -15,10 +15,9 @@ using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using StarLight.Launcher.Utils;
 using KMCCC.Launcher;
-using MinecraftOutClient.Modules;
-using ServerInfo = MinecraftOutClient.Modules.ServerInfo;
 using System.Net;
 using CL.IO.Zip;
+using ServerInfo = MinecraftOutClient.Modules.ServerInfo;
 #endregion
 
 namespace StarLight.Launcher
@@ -45,17 +44,19 @@ namespace StarLight.Launcher
                 this.ShowMessageAsync("错误", e.Message);
             }
             //新实例化一个ServerInfo，并使用带参数的构造函数设置IP以及端口
-            /*
             try
             {
-                ServerInfo info = new ServerInfo("mc.nepnepnep.top", 25565);
+                ServerInfo info = new ServerInfo("mc18.icraft.cc", 47913);
                 info.StartGetServerInfo();
+                ServerStatus_TextBox.Content = "在线人数：" + info.CurrentPlayerCount +
+                    "\n延迟：" + info.Ping +
+                    "\nMOTD：" + info.MOTD;
             }
             catch (Exception e)
             {
                 this.ShowMessageAsync("获取服务器信息异常", e.Message);
+
             }
-            */
             GetBackgroundImage();
             // 检测配置文件
             if (File.Exists(@"Data\Config.ini") == false)
@@ -118,7 +119,7 @@ namespace StarLight.Launcher
                         var update = await this.ShowProgressAsync("更新", "");
                         update.SetMessage("正在下载更新包...\n初始化...");
                         System.Windows.Forms.Application.DoEvents();
-                        /*
+
                         float percent = 0;
 
                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -187,7 +188,7 @@ namespace StarLight.Launcher
                         }
                         so.Close();
                         st.Close();
-                        */
+
                         update.SetTitle("解压");
                         update.SetMessage("下载完成，准备解压...");
                         System.Windows.Forms.Application.DoEvents();
@@ -202,9 +203,10 @@ namespace StarLight.Launcher
                         });
                         update.SetMessage("解压完成");
                         System.Windows.Forms.Application.DoEvents();
-                        File.Delete(@"update.zip.tmp");
-                        Environment.Exit(0);
-                        await update.CloseAsync();
+                        update.SetTitle("应用");
+                        update.SetMessage("正在应用更新文件中...");
+                        //File.Delete(@"update.zip.tmp");
+                        //MiniUtils.LaunchBat("update.bat", Process.GetCurrentProcess().Id.ToString());
 
                     }
                     catch (Exception e)

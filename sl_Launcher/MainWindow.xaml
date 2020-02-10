@@ -24,8 +24,7 @@
             </ComboBox>
             <Label x:Name="Copy_TextBox" Content="©2015-2019 千叶集团" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,10"/>
             <Label x:Name="Group_TextBox" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,44"/>
-            <Label x:Name="Online_TextBox" Content="在线人数：" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,306"/>
-            <Label x:Name="Player_TextBox" Content="玩家列表：" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,272"/>
+            <Label x:Name="ServerStatus_TextBox" Content="" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="284" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,78"/>
         </Grid>
         <MediaElement LoadedBehavior="Manual" Name="BackgroundMusicPlayer" Width="0" Height="0" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="-100,-100,-100,-100" MediaEnded="BackgroundMusicPlayer_MediaEnded"/>
     </Grid>
