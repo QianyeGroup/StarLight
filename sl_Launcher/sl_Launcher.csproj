@@ -92,6 +92,7 @@
     </Compile>
     <Compile Include="Others\GlobalVar.cs" />
     <Compile Include="Utils\HashUtils.cs" />
+    <Compile Include="Utils\MinecraftUtils.cs" />
     <Compile Include="Utils\ZipUtils.cs" />
     <Compile Include="Utils\IniFileUtils.cs" />
     <Compile Include="Core\LaunchCore.cs" />

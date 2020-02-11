@@ -27,7 +27,6 @@ namespace StarLight.Launcher
         {
             InitializeComponent();
             MaxMemory.Text = GlobalVar.MaxMemory.ToString();
-            BGM.SelectedIndex = GlobalVar.BGM;
             JavaPath.Text = GlobalVar.JavaPath;
         }
 
@@ -39,7 +38,6 @@ namespace StarLight.Launcher
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
             GlobalVar.MaxMemory = int.Parse(MaxMemory.Text);
-            GlobalVar.BGM = BGM.SelectedIndex;
             GlobalVar.JavaPath = JavaPath.Text;
             IniFileUtils.SetValue("Config", "MaxMemory", GlobalVar.MaxMemory.ToString(), @"Data\Config.ini");
             IniFileUtils.SetValue("Config", "BGM", GlobalVar.BGM.ToString(), @"Data\Config.ini");

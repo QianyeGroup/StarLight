@@ -6,17 +6,12 @@
         <Label Content="最大内存:" HorizontalAlignment="Left" Margin="16,11,0,0" VerticalAlignment="Top"/>
         <TextBox Name="MaxMemory" HorizontalAlignment="Left" Height="23" Margin="77,11,0,0" VerticalAlignment="Top" Width="54"/>
         <Label Content="MB" HorizontalAlignment="Left" Margin="131,11,0,0" VerticalAlignment="Top"/>
-        <Label Content="背景音乐:" HorizontalAlignment="Left" Margin="168,11,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.15,-0.038" Grid.ColumnSpan="2"/>
-        <ComboBox Name="BGM" HorizontalAlignment="Left" Margin="234,11,0,0" VerticalAlignment="Top" Width="42">
-            <Label Content="开"/>
-            <Label Content="关"/>
-        </ComboBox>
-        <Button Name="AutoMem" Content="获取最优内存" HorizontalAlignment="Left" Margin="10,94,0,0" VerticalAlignment="Top" Width="89" FontSize="12" RenderTransformOrigin="0.467,1.833" Click="AutoMem_Click"/>
+        <Button Name="AutoMem" Content="获取最优内存" HorizontalAlignment="Left" Margin="192,11,0,0" VerticalAlignment="Top" Width="89" FontSize="12" RenderTransformOrigin="0.467,1.833" Click="AutoMem_Click"/>
         <Label Content="Java路径:" HorizontalAlignment="Left" Margin="16,52,0,0" VerticalAlignment="Top"/>
         <TextBox Name="JavaPath" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="6" Margin="82,52,0,0" VerticalAlignment="Top" Width="162"/>
         <Button Content="选择" HorizontalAlignment="Left" Height="26" Margin="249,52,0,0" VerticalAlignment="Top" Width="32" RenderTransformOrigin="-0.812,2.615" Click="Select_Click"/>
         <Label Content="Launcher：KMCCC UI：MahApps.Metro" HorizontalAlignment="Left" Margin="0,128,0,0" VerticalAlignment="Top" FontSize="10" Width="294" Height="22" HorizontalContentAlignment="Center" Grid.ColumnSpan="2"/>
         <Button x:Name="Done" Content="保存设置" HorizontalAlignment="Left" Margin="211,94,0,0" VerticalAlignment="Top" Width="75" FontSize="12" Click="Done_Click" RenderTransformOrigin="0.467,1.833"/>
-        <Button x:Name="AutoJava" Content="获取Java路径" HorizontalAlignment="Left" Margin="110,94,0,0" VerticalAlignment="Top" Width="89" FontSize="12" RenderTransformOrigin="0.467,1.833" Click="AutoJava_Click"/>
+        <Button x:Name="AutoJava" Content="获取Java路径" HorizontalAlignment="Left" Margin="16,93,0,0" VerticalAlignment="Top" Width="89" FontSize="12" RenderTransformOrigin="0.467,1.833" Click="AutoJava_Click"/>
     </Grid>
 </Controls:MetroWindow>

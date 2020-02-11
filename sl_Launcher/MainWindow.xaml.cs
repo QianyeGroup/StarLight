@@ -18,6 +18,8 @@ using KMCCC.Launcher;
 using System.Net;
 using CL.IO.Zip;
 using ServerInfo = MinecraftOutClient.Modules.ServerInfo;
+using System.Windows.Threading;
+using System.Diagnostics;
 #endregion
 
 namespace StarLight.Launcher
@@ -27,7 +29,11 @@ namespace StarLight.Launcher
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        // 启动器核心
         public static LauncherCore Core;
+        // 标题设置计时器
+        public static DispatcherTimer titleChange;
+
         #region 初始化窗口
         public MainWindow()
         {
@@ -35,8 +41,6 @@ namespace StarLight.Launcher
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
             try
             {
-                MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Music.txt", @"Data\Url\", "Music.txt");
-                MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
                 MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
             }
             catch (Exception e)
@@ -46,11 +50,10 @@ namespace StarLight.Launcher
             //新实例化一个ServerInfo，并使用带参数的构造函数设置IP以及端口
             try
             {
-                ServerInfo info = new ServerInfo("mc18.icraft.cc", 47913);
+                ServerInfo info = new ServerInfo("server.iqianye.cn", 47913);
                 info.StartGetServerInfo();
                 ServerStatus_TextBox.Content = "在线人数：" + info.CurrentPlayerCount +
-                    "\n延迟：" + info.Ping +
-                    "\nMOTD：" + info.MOTD;
+                    "\n延迟：" + info.Ping;
             }
             catch (Exception e)
             {
@@ -63,13 +66,11 @@ namespace StarLight.Launcher
             {
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
-                this.ShowMessageAsync("检测到您首次启动游戏", "最大内存默认为1024MB。(条件允许的情况下推荐设置为4096MB)\n背景音乐默认关闭。\n如需修改请点击右上角设置按钮。");
-                IniFileUtils.SetValue("Config", "MaxMemory", "1024", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "MaxMemory", (KMCCC.Tools.SystemTools.GetRunmemory() / 2).ToString(), @"Data\Config.ini");
                 IniFileUtils.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
-                IniFileUtils.SetValue("Config", "BGM", "1", @"Data\Config.ini");
-                IniFileUtils.SetValue("Config", "UserName", " ", @"Data\Config.ini");
-                IniFileUtils.SetValue("Config", "Account", " ", @"Data\Config.ini");
-                IniFileUtils.SetValue("Config", "Password", " ", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "UserName", "", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "Account", "", @"Data\Config.ini");
+                IniFileUtils.SetValue("Config", "Password", "", @"Data\Config.ini");
                 IniFileUtils.SetValue("Config", "JavaPath", KMCCC.Tools.SystemTools.FindJava().Last(), @"Data\Config.ini");
             }
             // 读取配置文件
@@ -78,18 +79,14 @@ namespace StarLight.Launcher
             GlobalVar.Password = IniFileUtils.GetValue("Config", "Password", @"Data\Config.ini");
             GlobalVar.LoginMode = int.Parse(IniFileUtils.GetValue("Config", "LoginMode", @"Data\Config.ini"));
             GlobalVar.MaxMemory = int.Parse(IniFileUtils.GetValue("Config", "MaxMemory", @"Data\Config.ini"));
-            GlobalVar.BGM = int.Parse(IniFileUtils.GetValue("Config", "BGM", @"Data\Config.ini"));
             GlobalVar.JavaPath = IniFileUtils.GetValue("Config", "JavaPath", @"Data\Config.ini");
             // 应用控件配置
             this.ComboBox_LoginMode.SelectedIndex = GlobalVar.LoginMode;
-            if (GlobalVar.BGM == 0)
-            {
-                Thread GBM = new Thread(GetBackgroundMusic);
-                GBM.Start();
-            }
             CheckUpdate();
         }
         #endregion
+
+        #region 检查更新
         private async void CheckUpdate()
         {
             // 检查更新
@@ -113,146 +110,110 @@ namespace StarLight.Launcher
             {
                 await this.ShowMessageAsync("更新", "发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n" + updateLog, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "更新" });
                 {
-                    //c = await this.ShowProgressAsync("更新", "");
-                    try
+                    if (int.Parse(latestVer.Replace(".", "")) - int.Parse(GlobalVar.ThisVer.Replace(".", "")) == 1)
                     {
-                        var update = await this.ShowProgressAsync("更新", "");
-                        update.SetMessage("正在下载更新包...\n初始化...");
-                        System.Windows.Forms.Application.DoEvents();
-
-                        float percent = 0;
-
-                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                        HttpWebRequest Myrq;
-                        switch (GlobalVar.ThisVer)
+                        try
                         {
-                            case "3.4":
-                                Myrq = (HttpWebRequest)WebRequest.Create(GlobalVar.ResRootUrl + "file/ota/StarLight_OTA_V" + GlobalVar.ThisVer + "-V" + latestVer + ".zip");
-                                break;
-                            default:
-                                Myrq = (HttpWebRequest)WebRequest.Create(GlobalVar.ResRootUrl + "file/ota/StarLight_OTA_V" + GlobalVar.ThisVer + "-V" + latestVer + ".zip");
-                                break;
-                        }
-                        HttpWebResponse myrp = (HttpWebResponse)Myrq.GetResponse();
-                        long totalBytes = myrp.ContentLength;
-                        update.Maximum = (int)totalBytes;
-                        System.IO.Stream st = myrp.GetResponseStream();
-                        System.IO.Stream so = new System.IO.FileStream(@"update.zip.tmp", System.IO.FileMode.Create);
-                        long totalDownloadedByte = 0;
-                        byte[] by = new byte[1024];
-                        int osize = st.Read(by, 0, (int)by.Length);
-
-                        while (osize > 0)
-                        {
-                            totalDownloadedByte = osize + totalDownloadedByte;
+                            var update = await this.ShowProgressAsync("更新", "");
+                            update.SetMessage("正在下载更新包...\n初始化...");
                             System.Windows.Forms.Application.DoEvents();
-                            so.Write(by, 0, osize);
-                            update.SetProgress((int)totalDownloadedByte);
-                            osize = st.Read(by, 0, (int)by.Length);
 
-                            percent = (float)totalDownloadedByte / (float)totalBytes * 100;
+                            float percent = 0;
 
-                            string totalSizeType;
-                            float totalSizeVar;
-                            string totalDownloadedSizeType;
-                            float totalDownloadedSizeVar;
-                            if (totalDownloadedByte / 1024 <= 1024)
-                            {
-                                totalDownloadedSizeType = "KB";
-                                totalDownloadedSizeVar = (float)totalDownloadedByte / 1024;
-                            }
-                            else
-                            {
-                                totalDownloadedSizeType = "MB";
-                                totalDownloadedSizeVar = (float)totalDownloadedByte / 1024 / 1024;
-                            }
-                            if (totalBytes / 1024 <= 1024)
-                            {
-                                totalSizeType = "KB";
-                                totalSizeVar = (float)totalBytes / 1024;
-                            }
-                            else
-                            {
-                                totalSizeType = "MB";
-                                totalSizeVar = (float)totalBytes / 1024 / 1024;
-                            }
-                            update.SetTitle("更新 - " + percent.ToString("0") + "%");
-                            update.SetMessage("正在下载更新包 - " +
-                                totalDownloadedSizeVar.ToString("f2") +
-                                totalDownloadedSizeType + "/" +
-                                totalSizeVar.ToString("f2") +
-                                totalSizeType +
-                                "\n\n更新日志：\n" + updateLog);
+                            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                            HttpWebRequest Myrq = (HttpWebRequest)WebRequest.Create(GlobalVar.ResRootUrl + "file/ota/StarLight_OTA_V" + GlobalVar.ThisVer + "-V" + latestVer + ".zip");
+                            HttpWebResponse myrp = (HttpWebResponse)Myrq.GetResponse();
+                            long totalBytes = myrp.ContentLength;
+                            update.Maximum = (int)totalBytes;
+                            System.IO.Stream st = myrp.GetResponseStream();
+                            System.IO.Stream so = new System.IO.FileStream(@"update.zip.tmp", System.IO.FileMode.Create);
+                            long totalDownloadedByte = 0;
+                            byte[] by = new byte[1024];
+                            int osize = st.Read(by, 0, (int)by.Length);
 
-                            System.Windows.Forms.Application.DoEvents(); //必须加注这句代码，否则label1将因为循环执行太快而来不及显示信息
-                        }
-                        so.Close();
-                        st.Close();
+                            while (osize > 0)
+                            {
+                                totalDownloadedByte = osize + totalDownloadedByte;
+                                System.Windows.Forms.Application.DoEvents();
+                                so.Write(by, 0, osize);
+                                update.SetProgress((int)totalDownloadedByte);
+                                osize = st.Read(by, 0, (int)by.Length);
 
-                        update.SetTitle("解压");
-                        update.SetMessage("下载完成，准备解压...");
-                        System.Windows.Forms.Application.DoEvents();
-                        ZipHandler handler = ZipHandler.GetInstance();
-                        var fromZip = @"update.zip.tmp"; // 需要解压的压缩文件路径
-                        var toDic = @"."; // 解压到的文件夹路径
-                        handler.UnpackAll(fromZip, toDic, (num) =>
-                        {
-                            update.SetTitle("解压 - " + num.ToString("0") + "%");
-                            update.SetMessage("正在解压更新文件中...");
+                                percent = (float)totalDownloadedByte / (float)totalBytes * 100;
+
+                                string totalSizeType;
+                                float totalSizeVar;
+                                string totalDownloadedSizeType;
+                                float totalDownloadedSizeVar;
+                                if (totalDownloadedByte / 1024 <= 1024)
+                                {
+                                    totalDownloadedSizeType = "KB";
+                                    totalDownloadedSizeVar = (float)totalDownloadedByte / 1024;
+                                }
+                                else
+                                {
+                                    totalDownloadedSizeType = "MB";
+                                    totalDownloadedSizeVar = (float)totalDownloadedByte / 1024 / 1024;
+                                }
+                                if (totalBytes / 1024 <= 1024)
+                                {
+                                    totalSizeType = "KB";
+                                    totalSizeVar = (float)totalBytes / 1024;
+                                }
+                                else
+                                {
+                                    totalSizeType = "MB";
+                                    totalSizeVar = (float)totalBytes / 1024 / 1024;
+                                }
+                                update.SetTitle("更新 - " + percent.ToString("0") + "%");
+                                update.SetMessage("正在下载更新包 - " +
+                                    totalDownloadedSizeVar.ToString("f2") +
+                                    totalDownloadedSizeType + "/" +
+                                    totalSizeVar.ToString("f2") +
+                                    totalSizeType +
+                                    "\n\n更新日志：\n" + updateLog);
+
+                                System.Windows.Forms.Application.DoEvents(); //必须加注这句代码，否则label1将因为循环执行太快而来不及显示信息
+                            }
+                            so.Close();
+                            st.Close();
+
+                            update.SetTitle("解压");
+                            update.SetMessage("下载完成，准备解压...");
                             System.Windows.Forms.Application.DoEvents();
-                        });
-                        update.SetMessage("解压完成");
-                        System.Windows.Forms.Application.DoEvents();
-                        update.SetTitle("应用");
-                        update.SetMessage("正在应用更新文件中...");
-                        //File.Delete(@"update.zip.tmp");
-                        //MiniUtils.LaunchBat("update.bat", Process.GetCurrentProcess().Id.ToString());
+                            ZipHandler handler = ZipHandler.GetInstance();
+                            var fromZip = @"update.zip.tmp"; // 需要解压的压缩文件路径
+                            var toDic = @"."; // 解压到的文件夹路径
+                            handler.UnpackAll(fromZip, toDic, (num) =>
+                            {
+                                update.SetTitle("解压 - " + num.ToString("0") + "%");
+                                update.SetMessage("正在解压更新文件中...");
+                                System.Windows.Forms.Application.DoEvents();
+                            });
+                            update.SetMessage("解压完成");
+                            System.Windows.Forms.Application.DoEvents();
+                            update.SetTitle("应用");
+                            update.SetMessage("正在应用更新文件中...");
+                            File.Delete(@"update.zip.tmp");
+                            MiniUtils.LaunchBat("update.bat", Process.GetCurrentProcess().Id.ToString());
 
+                        }
+                        catch (Exception e)
+                        {
+                            await this.ShowMessageAsync("错误", e.Message);
+                            Environment.Exit(0);
+                        }
                     }
-                    catch (Exception e)
+                    else
                     {
-                        await this.ShowMessageAsync("错误", e.Message);
-                        Environment.Exit(0);
+                        await this.ShowMessageAsync("失败", "版本跨度过大 " + GlobalVar.ThisVer + " - " + latestVer + "\n请前往官网下载完整版更新。", MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "确定" });
+                        {
+                            System.Diagnostics.Process.Start("http://url.iqianye.cn/slupdate");
+                            Environment.Exit(0);
+                        }
                     }
-
-                    //System.Diagnostics.Process.Start("http://url.iqianye.cn/slupdate");
-                    //Environment.Exit(0);
                 }
             }
-        }
-
-        #region 获取背景音乐
-        private void GetBackgroundMusic()
-        {
-            GC.Collect();
-            BackgroundMusicPlayer.Dispatcher.Invoke(new Action(() => { BackgroundMusicPlayer.Stop(); }));
-            BackgroundMusicPlayer.Dispatcher.Invoke(new Action(() => { BackgroundMusicPlayer.Source = null; }));
-            string dirPath;
-            string filePath;
-            int number;
-            Random r = new Random();
-            number = r.Next();
-            number = number % 36;
-            dirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\";
-            filePath = MiniUtils.GetRandomString(number) + ".qdl";
-            string[] rurl = File.ReadAllLines(@"Data\Url\Music.txt");
-            Random ur = new Random();
-            string url = rurl[ur.Next(rurl.Length)];
-            MiniUtils.ReadWebFile(url, dirPath, filePath);
-            // MiniTools.ReadWebFile("https://api.iqianye.cn/get/get_random_music.php?musictype=netease&displaytype=play", dirPath, filePath);
-            string hashMd5 = HashHelper.ComputeMD5(dirPath + filePath);
-            if (File.Exists(dirPath + hashMd5 + ".tmp.mp3"))
-            {
-                File.Delete(dirPath + filePath);
-            }
-            else
-            {
-                File.Move(dirPath + filePath, dirPath + hashMd5 + ".tmp.mp3");
-            }
-            filePath = hashMd5 + ".tmp.mp3";
-            BackgroundMusicPlayer.Dispatcher.Invoke(new Action(() => { BackgroundMusicPlayer.Source = new Uri(dirPath + filePath); }));
-            BackgroundMusicPlayer.Dispatcher.Invoke(new Action(() => { BackgroundMusicPlayer.Play(); }));
-            GC.Collect();
         }
         #endregion
 
@@ -314,6 +275,11 @@ namespace StarLight.Launcher
                         this.PasswordBox.IsEnabled = false;
                         Thread Play_Mojang = new Thread(PlayGame_Mojang);
                         Play_Mojang.Start();
+                        titleChange = new DispatcherTimer();
+                        titleChange.Tick += new EventHandler(titleChange_Tick);
+                        titleChange.Interval = new TimeSpan(10000000);   //时间间隔为一秒
+                        titleChange.Start();
+
                     }
                     break;
                 case 1:
@@ -331,6 +297,11 @@ namespace StarLight.Launcher
                         this.PasswordBox.IsEnabled = false;
                         Thread Play_Offline = new Thread(PlayGame_Offline);
                         Play_Offline.Start();
+                        titleChange = new DispatcherTimer();
+                        titleChange.Tick += new EventHandler(titleChange_Tick);
+                        titleChange.Interval = new TimeSpan(10000000);   //时间间隔为一秒
+                        titleChange.Start();
+
                     }
                     break;
             }
@@ -349,19 +320,24 @@ namespace StarLight.Launcher
                 {
                     case ErrorType.NoJAVA:
                         this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "你系统的Java有异常，可能你非正常途径删除过Java，请尝试重新安装Java。\n" + result.ErrorMessage); }));
-                        BackgroundMusicPlayer.Dispatcher.Invoke(new Action(() => { BackgroundMusicPlayer.Play(); }));
                         Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
-                        //MessageBox.Show("你系统的Java有异常，可能你非正常途径删除过Java，请尝试重新安装Java\n详细信息：" + result.ErrorMessage, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        ComboBox_LoginMode.Dispatcher.Invoke(new Action(() => { ComboBox_LoginMode.IsEnabled = true; }));
+                        Name_TextBox.Dispatcher.Invoke(new Action(() => { Name_TextBox.IsEnabled = true; }));
+                        PasswordBox.Dispatcher.Invoke(new Action(() => { PasswordBox.IsEnabled = true; }));
                         break;
                     case ErrorType.AuthenticationFailed:
                         this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "正版验证失败！请检查你的账号密码。"); }));
                         Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
-                        //MessageBox.Show(this, "正版验证失败！请检查你的账号密码", "账号错误\n详细信息：" + result.ErrorMessage, MessageBoxButton.OK, MessageBoxImage.Error);
+                        ComboBox_LoginMode.Dispatcher.Invoke(new Action(() => { ComboBox_LoginMode.IsEnabled = true; }));
+                        Name_TextBox.Dispatcher.Invoke(new Action(() => { Name_TextBox.IsEnabled = true; }));
+                        PasswordBox.Dispatcher.Invoke(new Action(() => { PasswordBox.IsEnabled = true; }));
                         break;
                     case ErrorType.UncompressingFailed:
                         this.Dispatcher.Invoke(new Action(() => { this.ShowMessageAsync("启动失败！", "可能的多开或文件损坏，请确认文件完整且不要多开。\n如果你不是多开游戏的话，请检查libraries文件夹是否完整。\n" + result.ErrorMessage); }));
                         Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
-                        //MessageBox.Show(this, "可能的多开或文件损坏，请确认文件完整且不要多开\n如果你不是多开游戏的话，请检查libraries文件夹是否完整\n详细信息：" + result.ErrorMessage, "可能的多开或文件损坏", MessageBoxButton.OK, MessageBoxImage.Error);
+                        ComboBox_LoginMode.Dispatcher.Invoke(new Action(() => { ComboBox_LoginMode.IsEnabled = true; }));
+                        Name_TextBox.Dispatcher.Invoke(new Action(() => { Name_TextBox.IsEnabled = true; }));
+                        PasswordBox.Dispatcher.Invoke(new Action(() => { PasswordBox.IsEnabled = true; }));
                         break;
                     default:
                         this.Dispatcher.Invoke(new Action(() =>
@@ -372,11 +348,9 @@ namespace StarLight.Launcher
                             (result.Exception == null ? string.Empty : result.Exception.StackTrace) + result.ErrorMessage);
                         }));
                         Play.Dispatcher.Invoke(new Action(() => { Play.IsEnabled = true; }));
-
-                        //MessageBox.Show(this,
-                        //    result.ErrorMessage + "\n" +
-                        //    (result.Exception == null ? string.Empty : result.Exception.StackTrace),
-                        //    "启动错误，请将此窗口截图向开发者寻求帮助");
+                        ComboBox_LoginMode.Dispatcher.Invoke(new Action(() => { ComboBox_LoginMode.IsEnabled = true; }));
+                        Name_TextBox.Dispatcher.Invoke(new Action(() => { Name_TextBox.IsEnabled = true; }));
+                        PasswordBox.Dispatcher.Invoke(new Action(() => { PasswordBox.IsEnabled = true; }));
                         break;
                 }
 
@@ -431,18 +405,23 @@ namespace StarLight.Launcher
         }
         #endregion
 
+
+        private void titleChange_Tick(object sender, EventArgs e)
+        {
+            IntPtr window = MinecraftUtils.FindWindow(null, "Minecraft 1.12.2");
+            if (window != IntPtr.Zero)
+            {
+                MinecraftUtils.SetWindowText(window, "星际之光客户端 V" + GlobalVar.ThisVer);
+                titleChange.Stop();
+                Environment.Exit(0);
+
+            }
+        }
+
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
 
         }
-
-        #region 背景音乐循环
-        private void BackgroundMusicPlayer_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            Thread GBM = new Thread(GetBackgroundMusic);
-            GBM.Start();
-        }
-        #endregion
 
         #region 模式下拉框检测
         private void ComboBox_LoginMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
