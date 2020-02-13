@@ -24,7 +24,6 @@
             </ComboBox>
             <Label x:Name="Copy_TextBox" Content="©2015-2019 千叶集团" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,10"/>
             <Label x:Name="Group_TextBox" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,44"/>
-            <Label x:Name="ServerStatus_TextBox" Content="" HorizontalAlignment="Center" Width="141" FontWeight="Bold" FontSize="13" Height="89" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="203,0,-144,367"/>
         </Grid>
     </Grid>
 </Controls:MetroWindow>

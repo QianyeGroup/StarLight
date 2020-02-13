@@ -15,6 +15,7 @@ using MahApps.Metro.Controls;
 using StarLight.Launcher.Utils;
 using Microsoft.Win32;
 using System.Windows.Forms;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace StarLight.Launcher
 {
@@ -40,7 +41,6 @@ namespace StarLight.Launcher
             GlobalVar.MaxMemory = int.Parse(MaxMemory.Text);
             GlobalVar.JavaPath = JavaPath.Text;
             IniFileUtils.SetValue("Config", "MaxMemory", GlobalVar.MaxMemory.ToString(), @"Data\Config.ini");
-            IniFileUtils.SetValue("Config", "BGM", GlobalVar.BGM.ToString(), @"Data\Config.ini");
             IniFileUtils.SetValue("Config", "JavaPath", GlobalVar.JavaPath, @"Data\Config.ini");
         }
 
@@ -53,7 +53,7 @@ namespace StarLight.Launcher
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string file = dialog.FileName;
-                JavaPath.Text = GlobalVar.JavaPath;
+                JavaPath.Text = file;
                 
             }
 
@@ -66,7 +66,12 @@ namespace StarLight.Launcher
 
         private void AutoJava_Click(object sender, RoutedEventArgs e)
         {
+            try { 
             JavaPath.Text = KMCCC.Tools.SystemTools.FindJava().Last();
+            }catch(Exception ex)
+            {
+                System.Windows.MessageBox.Show("请检查是否已安装Java。","获取Java路径错误",MessageBoxButton.OK,MessageBoxImage.Error);
+            }
         }
     }
 }

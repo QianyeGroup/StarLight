@@ -4,8 +4,8 @@
     {
 
         // 版本
-        public static string ThisVer = "3.8"; // 当前版本
-        public static string ThisVerCode = "20100210"; // 当前版本构建号
+        public static string ThisVer = "4.0"; // 当前版本
+        public static string ThisVerCode = "202002130"; // 当前版本构建号
 
         // 配置相关
         public static string UserName; // 用户名
@@ -15,6 +15,6 @@
         public static int MaxMemory; // 最大内存
         public static int LoginMode; // 登录模式
         // 其他
-        public static string ResRootUrl = "https://starlight.oss-cn-shanghai.aliyuncs.com/"; // 资源服务器根地址
+        public static string ResRootUrl = "https://api.zhenxin.xyz/sl/"; // 资源服务器根地址
     }
 }

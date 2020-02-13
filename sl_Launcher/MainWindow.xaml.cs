@@ -20,6 +20,7 @@ using CL.IO.Zip;
 using ServerInfo = MinecraftOutClient.Modules.ServerInfo;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.Reflection;
 #endregion
 
 namespace StarLight.Launcher
@@ -38,9 +39,11 @@ namespace StarLight.Launcher
         public MainWindow()
         {
             InitializeComponent();
+            // 设置标题
             this.Title = "星际之光客户端 V" + GlobalVar.ThisVer;
             try
             {
+                //从网络获取背景图片列表
                 MiniUtils.ReadWebFile(GlobalVar.ResRootUrl + "data/url/Image.txt", @"Data\Url\", "Image.txt");
             }
             catch (Exception e)
@@ -52,8 +55,8 @@ namespace StarLight.Launcher
             {
                 ServerInfo info = new ServerInfo("server.iqianye.cn", 47913);
                 info.StartGetServerInfo();
-                ServerStatus_TextBox.Content = "在线人数：" + info.CurrentPlayerCount +
-                    "\n延迟：" + info.Ping;
+                // 设置标题
+                this.Title = "星际之光客户端 V" + GlobalVar.ThisVer + " 在线：" + info.CurrentPlayerCount + " 延迟：" + info.Ping + "毫秒";
             }
             catch (Exception e)
             {
@@ -66,12 +69,21 @@ namespace StarLight.Launcher
             {
                 FileStream fs = new FileStream(@"Data\Config.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 fs.Close();
+                // 获取运行内存并除2
                 IniFileUtils.SetValue("Config", "MaxMemory", (KMCCC.Tools.SystemTools.GetRunmemory() / 2).ToString(), @"Data\Config.ini");
                 IniFileUtils.SetValue("Config", "LoginMode", "1", @"Data\Config.ini");
                 IniFileUtils.SetValue("Config", "UserName", "", @"Data\Config.ini");
                 IniFileUtils.SetValue("Config", "Account", "", @"Data\Config.ini");
                 IniFileUtils.SetValue("Config", "Password", "", @"Data\Config.ini");
-                IniFileUtils.SetValue("Config", "JavaPath", KMCCC.Tools.SystemTools.FindJava().Last(), @"Data\Config.ini");
+                // 查找Java列表中第一个路径
+                try
+                {
+                    IniFileUtils.SetValue("Config", "JavaPath", KMCCC.Tools.SystemTools.FindJava().Last(), @"Data\Config.ini");
+                }
+                catch (Exception ex)
+                {
+                    this.ShowMessageAsync("获取Java路径错误", "请检查是否已安装Java。");
+                }
             }
             // 读取配置文件
             GlobalVar.UserName = IniFileUtils.GetValue("Config", "UserName", @"Data\Config.ini");
@@ -81,15 +93,14 @@ namespace StarLight.Launcher
             GlobalVar.MaxMemory = int.Parse(IniFileUtils.GetValue("Config", "MaxMemory", @"Data\Config.ini"));
             GlobalVar.JavaPath = IniFileUtils.GetValue("Config", "JavaPath", @"Data\Config.ini");
             // 应用控件配置
-            this.ComboBox_LoginMode.SelectedIndex = GlobalVar.LoginMode;
-            CheckUpdate();
+            this.ComboBox_LoginMode.SelectedIndex = GlobalVar.LoginMode; // 模式下拉框
+            CheckUpdate();  // 检查更新
         }
         #endregion
 
         #region 检查更新
         private async void CheckUpdate()
         {
-            // 检查更新
             string webFilePath = GlobalVar.ResRootUrl + "version.ini"; // 远程数据
             string saveDirPath = System.IO.Path.GetTempPath() + @"Qianye\StarLight\sl_Launcher\"; // 本地数据
             try
@@ -110,16 +121,21 @@ namespace StarLight.Launcher
             {
                 await this.ShowMessageAsync("更新", "发现新版本 V" + latestVer + "(Build " + latestVerCode + ")\n更新日志：\n" + updateLog, MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "更新" });
                 {
-                    if (int.Parse(latestVer.Replace(".", "")) - int.Parse(GlobalVar.ThisVer.Replace(".", "")) == 1)
+                    // 判断版本是否跨度过大(超过一个小版本)
+                    if (int.Parse(latestVer.Replace(".", "")) - int.Parse(GlobalVar.ThisVer.Replace(".", "")) == 1
+                        ||
+                        int.Parse(latestVer.Replace(".", "")) - int.Parse(GlobalVar.ThisVer.Replace(".", "")) == 0)
                     {
                         try
                         {
+                            // 初始化下载
                             var update = await this.ShowProgressAsync("更新", "");
                             update.SetMessage("正在下载更新包...\n初始化...");
                             System.Windows.Forms.Application.DoEvents();
 
                             float percent = 0;
 
+                            // 定义HttpWebRequest等信息
                             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                             HttpWebRequest Myrq = (HttpWebRequest)WebRequest.Create(GlobalVar.ResRootUrl + "file/ota/StarLight_OTA_V" + GlobalVar.ThisVer + "-V" + latestVer + ".zip");
                             HttpWebResponse myrp = (HttpWebResponse)Myrq.GetResponse();
@@ -131,6 +147,7 @@ namespace StarLight.Launcher
                             byte[] by = new byte[1024];
                             int osize = st.Read(by, 0, (int)by.Length);
 
+                            // 循环获取信息
                             while (osize > 0)
                             {
                                 totalDownloadedByte = osize + totalDownloadedByte;
@@ -195,7 +212,7 @@ namespace StarLight.Launcher
                             update.SetTitle("应用");
                             update.SetMessage("正在应用更新文件中...");
                             File.Delete(@"update.zip.tmp");
-                            MiniUtils.LaunchBat("update.bat", Process.GetCurrentProcess().Id.ToString());
+                            MiniUtils.LaunchBat("update.bat", Process.GetCurrentProcess().Id.ToString() + " " + Assembly.GetExecutingAssembly().Location);
 
                         }
                         catch (Exception e)
@@ -208,7 +225,7 @@ namespace StarLight.Launcher
                     {
                         await this.ShowMessageAsync("失败", "版本跨度过大 " + GlobalVar.ThisVer + " - " + latestVer + "\n请前往官网下载完整版更新。", MessageDialogStyle.Affirmative, new MetroDialogSettings() { AffirmativeButtonText = "确定" });
                         {
-                            System.Diagnostics.Process.Start("http://url.iqianye.cn/slupdate");
+                            System.Diagnostics.Process.Start("https://sl.iqianye.cn");
                             Environment.Exit(0);
                         }
                     }
@@ -220,7 +237,6 @@ namespace StarLight.Launcher
         #region 获取背景图片
         private void GetBackgroundImage()
         {
-            GC.Collect();
             string dirPath;
             string filePath;
             int number;
@@ -248,7 +264,6 @@ namespace StarLight.Launcher
             b.ImageSource = new BitmapImage(new Uri(dirPath + filePath));
             b.Stretch = Stretch.Fill;
             this.Background = b;
-            GC.Collect();
         }
         #endregion
 
@@ -276,7 +291,7 @@ namespace StarLight.Launcher
                         Thread Play_Mojang = new Thread(PlayGame_Mojang);
                         Play_Mojang.Start();
                         titleChange = new DispatcherTimer();
-                        titleChange.Tick += new EventHandler(titleChange_Tick);
+                        titleChange.Tick += new EventHandler(titleChange_TickAsync);
                         titleChange.Interval = new TimeSpan(10000000);   //时间间隔为一秒
                         titleChange.Start();
 
@@ -298,7 +313,7 @@ namespace StarLight.Launcher
                         Thread Play_Offline = new Thread(PlayGame_Offline);
                         Play_Offline.Start();
                         titleChange = new DispatcherTimer();
-                        titleChange.Tick += new EventHandler(titleChange_Tick);
+                        titleChange.Tick += new EventHandler(titleChange_TickAsync);
                         titleChange.Interval = new TimeSpan(10000000);   //时间间隔为一秒
                         titleChange.Start();
 
@@ -405,8 +420,8 @@ namespace StarLight.Launcher
         }
         #endregion
 
-
-        private void titleChange_Tick(object sender, EventArgs e)
+        #region 标题更改监测器
+        private async void titleChange_TickAsync(object sender, EventArgs e)
         {
             IntPtr window = MinecraftUtils.FindWindow(null, "Minecraft 1.12.2");
             if (window != IntPtr.Zero)
@@ -417,6 +432,7 @@ namespace StarLight.Launcher
 
             }
         }
+        #endregion
 
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
