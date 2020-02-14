@@ -82,7 +82,7 @@ namespace StarLight.Launcher
                 }
                 catch (Exception ex)
                 {
-                    this.ShowMessageAsync("获取Java路径错误", "请检查是否已安装Java。");
+                    this.ShowMessageAsync("获取Java路径错误", "请检查是否已安装Java。" + "\n" + ex.Message);
                 }
             }
             // 读取配置文件
@@ -291,7 +291,7 @@ namespace StarLight.Launcher
                         Thread Play_Mojang = new Thread(PlayGame_Mojang);
                         Play_Mojang.Start();
                         titleChange = new DispatcherTimer();
-                        titleChange.Tick += new EventHandler(titleChange_TickAsync);
+                        titleChange.Tick += new EventHandler(TitleChange_Tick);
                         titleChange.Interval = new TimeSpan(10000000);   //时间间隔为一秒
                         titleChange.Start();
 
@@ -313,7 +313,7 @@ namespace StarLight.Launcher
                         Thread Play_Offline = new Thread(PlayGame_Offline);
                         Play_Offline.Start();
                         titleChange = new DispatcherTimer();
-                        titleChange.Tick += new EventHandler(titleChange_TickAsync);
+                        titleChange.Tick += new EventHandler(TitleChange_Tick);
                         titleChange.Interval = new TimeSpan(10000000);   //时间间隔为一秒
                         titleChange.Start();
 
@@ -421,12 +421,22 @@ namespace StarLight.Launcher
         #endregion
 
         #region 标题更改监测器
-        private async void titleChange_TickAsync(object sender, EventArgs e)
+        private void TitleChange_Tick(object sender, EventArgs e)
         {
             IntPtr window = MinecraftUtils.FindWindow(null, "Minecraft 1.12.2");
             if (window != IntPtr.Zero)
             {
-                MinecraftUtils.SetWindowText(window, "星际之光客户端 V" + GlobalVar.ThisVer);
+                string name = null;
+                switch (ComboBox_LoginMode.SelectedIndex)
+                {
+                    case 0:
+                        name = GlobalVar.Account;
+                        break;
+                    case 1:
+                        name = GlobalVar.UserName;
+                        break;
+                }
+                MinecraftUtils.SetWindowText(window, "星际之光客户端 V" + GlobalVar.ThisVer + " " + name);
                 titleChange.Stop();
                 Environment.Exit(0);
 

@@ -54,7 +54,7 @@ namespace StarLight.Launcher
             {
                 string file = dialog.FileName;
                 JavaPath.Text = file;
-                
+
             }
 
         }
@@ -66,11 +66,13 @@ namespace StarLight.Launcher
 
         private void AutoJava_Click(object sender, RoutedEventArgs e)
         {
-            try { 
-            JavaPath.Text = KMCCC.Tools.SystemTools.FindJava().Last();
-            }catch(Exception ex)
+            try
             {
-                System.Windows.MessageBox.Show("请检查是否已安装Java。","获取Java路径错误",MessageBoxButton.OK,MessageBoxImage.Error);
+                JavaPath.Text = KMCCC.Tools.SystemTools.FindJava().Last();
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show("请检查是否已安装Java。" + "\n" + ex.Message, "获取Java路径错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
