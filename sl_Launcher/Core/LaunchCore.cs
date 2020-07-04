@@ -1,4 +1,4 @@
-﻿﻿using KMCCC.Launcher;
+﻿using KMCCC.Launcher;
 using KMCCC.Authentication;
 
 namespace StarLight.Launcher.Utils
@@ -18,6 +18,7 @@ namespace StarLight.Launcher.Utils
             {
                 Version = ver, //Ver为Versions里你要启动的版本名字
                 MaxMemory = MaxMemory, //最大内存，int类型
+                Size = new WindowSize { Width = 1280, Height = 768 },
                 Authenticator = new OfflineAuthenticator(UserName), //离线启动
                 //Authenticator = new YggdrasilLogin("邮箱", "密码", true), // 正版启动，最后一个为是否twitch登录
             }); ; ; ;
@@ -37,6 +38,7 @@ namespace StarLight.Launcher.Utils
             {
                 Version = ver, //Ver为Versions里你要启动的版本名字
                 MaxMemory = MaxMemory, //最大内存，int类型
+                Size = new WindowSize { Width = 1280, Height = 768 },
                 //Authenticator = new OfflineAuthenticator(UserName), //离线启动
                 Authenticator = new YggdrasilLogin(Account, Password, false), // 正版启动，最后一个为是否twitch登录
             });
