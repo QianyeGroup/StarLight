@@ -1,13 +1,17 @@
-﻿using KMCCC.Launcher;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
-namespace StarLight.Launcher
+namespace sl_Launcher
 {
     /// <summary>
     /// App.xaml 的交互逻辑
     /// </summary>
     public partial class App : Application
     {
-       
     }
 }

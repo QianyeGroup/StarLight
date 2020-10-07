@@ -1,29 +1,46 @@
-﻿<Controls:MetroWindow x:Class="StarLight.Launcher.MainWindow"
-                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" Height="500" Width="800" Title="StarLight Client V?.?"    ResizeMode = "CanMinimize" WindowStartupLocation="CenterScreen" Icon="Assets/Icon.ico" Closed="MetroWindow_Closed">
-
-    <Controls:MetroWindow.RightWindowCommands>
-        <Controls:WindowCommands>
-            <Button Name="Settings" Content="设置" Click="Settings_Click"/>
-        </Controls:WindowCommands>
-    </Controls:MetroWindow.RightWindowCommands>
+﻿<mah:MetroWindow x:Class="sl_Launcher.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+                 xmlns:local="clr-namespace:sl_Launcher"
+                 Title="星际之光客户端 V" Height="500" Width="800"
+                 ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button Content="设置" Click="ShowSettingsWindow" />
+            <Button Content="刷新背景图" Click="ReGetBgImg"></Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
     <Grid>
-        <Button Name="Play"  Content="开始游戏" Margin="0,0,50,50" Click="Play_Click" Opacity="0.5" Height="60" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="140" FontSize="18"/>
+        <Button Name="Play" Content="开始游戏" Margin="0,0,50,50" Click="Play_Click" Opacity="0.5" Height="60"
+                VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="140" FontSize="18" />
         <Grid Background="#80FFFFFF" HorizontalAlignment="Left" Width="200">
             <!-- 名字/账号相关控件 -->
-            <Label Name="Name" Content="名字:" Margin="6,45,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
-            <TextBox Name="Name_TextBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,45,0,0" VerticalAlignment="Top" Width="121" TextChanged="Name_TextBox_TextChanged"/>
-            <Label Name="Password" Content="密码:" Margin="6,75,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
-            <PasswordBox Name="PasswordBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,75,0,0" VerticalAlignment="Top" Width="121" TextInput="PasswordBox_TextInput"/>
-            <Label Name="LoginMode" Content="模式:" Margin="6,15,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top"/>
+            <Label Name="Name" Content="名字:" Margin="6,45,0,0" HorizontalAlignment="Left" Width="44" FontWeight="Bold"
+                   FontSize="13" Height="29" VerticalAlignment="Top" />
+            <TextBox Name="Name_TextBox" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,45,0,0"
+                     VerticalAlignment="Top" Width="121" TextChanged="Name_TextBox_TextChanged" />
+            <Label Name="Password" Content="密码:" Margin="6,75,0,0" HorizontalAlignment="Left" Width="44"
+                   FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top" />
+            <PasswordBox Name="PasswordBox" HorizontalAlignment="Left" Height="20" Background="White"
+                         Margin="62,75,0,0" VerticalAlignment="Top" Width="121" TextInput="PasswordBox_TextInput" />
+            <Label Name="LoginMode" Content="模式:" Margin="6,15,0,0" HorizontalAlignment="Left" Width="44"
+                   FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Top" />
             <!-- 必须在最后加载 -->
-            <ComboBox Name="ComboBox_LoginMode" HorizontalAlignment="Left" Height="20" Background="White" Margin="62,15,0,0" VerticalAlignment="Top" Width="121" SelectionChanged="ComboBox_LoginMode_SelectionChanged">
-                <Label Content="正版登陆"/>
-                <Label Content="离线模式"/>
+            <ComboBox Name="ComboBox_LoginMode" HorizontalAlignment="Left" Height="20" Background="White"
+                      Margin="62,15,0,0" VerticalAlignment="Top" Width="121"
+                      SelectionChanged="ComboBox_LoginMode_SelectionChanged">
+                <Label Content="正版登陆" />
+                <Label Content="离线模式" />
             </ComboBox>
-            <Label x:Name="Copy_TextBox" Content="©2015-2020 千叶集团" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,10"/>
-            <Label x:Name="Group_TextBox" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200" FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,44"/>
+            <Label x:Name="Copy_TextBox" Content="©2015-2021 千叶集团" HorizontalAlignment="Center" Width="200"
+                   FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom"
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,10" />
+            <Label x:Name="Group_TextBox" Content="官方交流群：738883219" HorizontalAlignment="Center" Width="200"
+                   FontWeight="Bold" FontSize="13" Height="29" VerticalAlignment="Bottom"
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,44" />
         </Grid>
     </Grid>
-</Controls:MetroWindow>
+</mah:MetroWindow>
